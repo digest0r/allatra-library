@@ -36,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         recyclerViewBooks.addItemDecoration(DividerItemDecoration(this))
         val adapter = BookListAdapter()
         recyclerViewBooks.adapter = adapter
-        adapter.setList(geData())
+        adapter.setList(getData())
     }
 
-    private fun geData(): MutableList<Book>{
+    private fun getData(): MutableList<Book>{
         val allBooks = mutableListOf<Book>()
 
         var book = Book("Sensei of Shambala. Book I", "",
