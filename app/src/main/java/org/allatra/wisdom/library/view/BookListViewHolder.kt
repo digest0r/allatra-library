@@ -10,7 +10,7 @@ class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bindView(book: Book) {
         itemView.textBookName.text = book.name
         itemView.textBookDescription.text = book.description
-        itemView.textReadPages.text = book.actualPage.toString() + "/" + book.totalPages
+        itemView.textReadPages.text = "Read: "+book.actualPage.toString() + "/" + book.totalPages
 
         Glide.with(itemView.context).load(book.thumbNail).into(itemView.thumbNail)
     }

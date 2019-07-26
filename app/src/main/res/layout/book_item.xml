@@ -12,25 +12,40 @@
             android:layout_height="150dp"
             android:contentDescription="@string/app_name"
             android:scaleType="fitXY"
-            android:src="@drawable/sensei1_en" />
+            android:src="@drawable/sensei1_en"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textBookName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"/>
 
     <TextView
             android:id="@+id/textBookName"
+            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingEnd="16dp"
             android:paddingLeft="16dp"
             android:paddingStart="16dp"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
+            android:textSize="18sp"
+            tools:text="Sensei of Shambala. Book I"
+            android:layout_marginTop="20dp"
             app:layout_constraintStart_toEndOf="@id/thumbNail"
-            tools:text="Sensei 1" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:scrollHorizontally="false"
+    />
 
     <TextView
             android:id="@+id/textReadPages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:paddingEnd="16dp"
             android:paddingLeft="16dp"
             android:paddingStart="16dp"
@@ -38,19 +53,22 @@
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@id/thumbNail"
             app:layout_constraintTop_toBottomOf="@id/textBookName"
-            tools:text="Views: 100" />
+            tools:text="Page: 1/100"/>
 
     <TextView
             android:id="@+id/textBookDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="16dp"
             android:paddingEnd="16dp"
             android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:paddingStart="16dp"
             android:textColor="@android:color/black"
             android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/textBookName"
-            tools:text="Release Date: 16 Feb 2018" app:layout_constraintStart_toEndOf="@+id/thumbNail"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@id/textReadPages"
+            tools:text="Sensei is wonderful book."
+            android:minLines="4"
+            app:layout_constraintStart_toEndOf="@+id/thumbNail"
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>
