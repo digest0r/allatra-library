@@ -205,6 +205,6 @@ class DatabaseHandler(private val context: Context) {
     }
 
     fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {
-        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.toMutableList()
+        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.getId() }.toMutableList()
     }
 }
