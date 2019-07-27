@@ -1,33 +1,30 @@
 package org.allatra.wisdom.library
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.realm.Realm
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import org.allatra.wisdom.library.adapter.BookListAdapter
 import org.allatra.wisdom.library.db.DatabaseHandler
 import org.allatra.wisdom.library.decoration.DividerItemDecoration
 import org.allatra.wisdom.library.decoration.VerticalSpaceItemDecoration
-import org.allatra.wisdom.library.model.Book
 import org.allatra.wisdom.library.static.EnumDefinition
-import android.widget.Toast
-import android.content.DialogInterface
+import android.content.res.Configuration
+import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
-
     private var databaseHandler: DatabaseHandler? = null
+    private val localeManager = LocaleManager()
     var alertLanguages: AlertDialog? = null
     private lateinit var adapter: BookListAdapter
+    private var localLang: String = "English"
 
     companion object {
         private const val TAG = "MainActivity"
@@ -43,8 +40,18 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayUseLogoEnabled(true)
 
         databaseHandler = DatabaseHandler(this)
+        //localeManager = LocaleManager()
         initData()
         initView()
+    }
+
+    override fun attachBaseContext(context: Context) {
+        super.attachBaseContext(localeManager.setLocale(context, localLang))
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        localeManager.setLocale(this, localLang)
     }
 
     private fun showDialogWithLanguages(){
@@ -55,18 +62,32 @@ class MainActivity : AppCompatActivity() {
         builder.setSingleChoiceItems(getLanguagesLocal(), -1) { dialog, item ->
             when (item) {
                 0 -> {
+                    localLang = getString(R.string.text_language_en)
                     Log.d(TAG, "Language is changed to: $item, EN")
                     adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.EN))
+                    localeManager.setLocale(this, localLang)
                 }
 
                 1 -> {
+                    localLang = getString(R.string.text_language_ru)
                     Log.d(TAG, "Language is changed to: $item, RU")
                     adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.RU))
+                    localeManager.setLocale(this, localLang)
                 }
 
                 2 ->{
+                    localLang = getString(R.string.text_language_ua)
                     Log.d(TAG, "Language is changed to: $item, UA")
                     adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.UA))
+                    localeManager.setLocale(this, localLang)
+                }
+
+                3 ->{
+                    localLang = getString(R.string.text_language_cz)
+                    Log.d(TAG, "Language is changed to: $item, CZ")
+                    adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.CZ))
+                    localeManager.setLocale(this, localLang)
+                    attachBaseContext(this)
                 }
             }
             alertLanguages!!.dismiss()
@@ -105,12 +126,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData(){
         databaseHandler?.let {
-            it.initDb()
-            //TODO: Check the main language of user - store into DB
-            val string = Locale.getDefault().displayLanguage
-            Log.i(TAG, "Language is $string")
-
-            Log.i(TAG, "Get records.")
+            it.initDb(Locale.getDefault().displayLanguage)
             val records = it.getFilteredBooks(EnumDefinition.EnLanguage.EN)
             Log.d(TAG, "Get records. Records = $records")
         }?: run {

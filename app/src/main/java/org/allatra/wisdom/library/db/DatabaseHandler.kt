@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import org.allatra.wisdom.library.MainActivity
 import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.StaticDefinition
@@ -28,7 +29,8 @@ class DatabaseHandler(private val context: Context) {
         realm = Realm.getInstance(config)
     }
 
-    fun initDb(){
+    fun initDb(language: String){
+        Log.i(TAG, "Language is $language")
         initRealm()
         // Try to fetch existing records
         listOfBooks = realm.where(BookInfo::class.java).findAll()
@@ -43,6 +45,12 @@ class DatabaseHandler(private val context: Context) {
         } else {
             Log.i(TAG, "Db has records. Size: ${listOfBooks.size}")
         }
+    }
+
+    fun initUserSettings(language: String){
+        var userSettings = UserSettings()
+        userSettings.setId(0)
+        userSettings.setLanguage(language)
     }
 
     fun deleteAll(){

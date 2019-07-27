@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Библиотека АллатРа</string>
+    <string name="action_settings">настройкy</string>
+    <string name="action_language">язык</string>
+    <string name="text_language_en">английский</string>
+    <string name="text_language_ru">русский</string>
+    <string name="text_language_ua">украинский</string>
+    <string name="text_language_cz">Чехия</string>
+    <string name="text_language_bg">болгарский</string>
+    <string name="text_language_de">немецкий</string>
+    <string name="text_language_pl">польский</string>
+    <string name="text_language_lt">латиница</string>
+    <string name="text_language_it">итальянский</string>
+</resources>
