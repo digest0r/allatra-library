@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         databaseHandler = DatabaseHandler(this)
         initData()
-
         initView()
     }
 
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         recyclerViewBooks.addItemDecoration(DividerItemDecoration(this))
         val adapter = BookListAdapter()
         recyclerViewBooks.adapter = adapter
-        adapter.setList(geData())
+        adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.EN))
     }
 
     private fun initData(){
@@ -57,25 +56,10 @@ class MainActivity : AppCompatActivity() {
             it.initDb()
             Log.i(TAG, "Get records.")
             val records = it.getFilteredBooks(EnumDefinition.EnLanguage.EN)
-            Log.d(TAG, "Get records. Records = ${records.toString()}")
+            Log.d(TAG, "Get records. Records = $records")
         }?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
         }
-
-
-    }
-
-    private fun geData(): MutableList<Book>{
-        val allBooks = mutableListOf<Book>()
-
-        var book = Book("Sensei of Shambala. Book I", "",
-            "In this Book, you will find the answers to the most important questions in life...", 1, 722, R.drawable.sensei_1_en)
-        allBooks.add(book)
-
-        book = Book("Sensei of Shambala. Book II", "",
-            "You can hide neither from the Truth nor from Wisdom. There is nothing secret on Earth which will not one day become known. ", 1, 722, R.drawable.sensei_2_en)
-        allBooks.add(book)
-        return allBooks
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

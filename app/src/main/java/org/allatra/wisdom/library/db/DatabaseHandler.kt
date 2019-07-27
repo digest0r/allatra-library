@@ -20,7 +20,7 @@ class DatabaseHandler(private val context: Context) {
         // Initialize Realm
         Realm.init(context)
         val config = RealmConfiguration.Builder()
-            .name("realm.books")
+            .name(context.getString(R.string.app_realm_name))
             .schemaVersion(3)
             .deleteRealmIfMigrationNeeded()
             .build()
@@ -34,11 +34,10 @@ class DatabaseHandler(private val context: Context) {
 
         if(listOfBooks.size==0){
             Log.i(TAG, "Db was initialized with new records.")
-
             realm.beginTransaction()
             createBooksEN()
             realm.commitTransaction()
-            // TODO: find another way
+
             listOfBooks = realm.where(BookInfo::class.java).findAll()
         } else {
             Log.i(TAG, "Db has records. Size: ${listOfBooks.size}")

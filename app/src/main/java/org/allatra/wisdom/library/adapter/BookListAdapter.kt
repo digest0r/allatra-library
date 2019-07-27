@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.allatra.wisdom.library.R
+import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.model.Book
 import org.allatra.wisdom.library.view.BookListViewHolder
 
 class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var listOfBooks = mutableListOf<Book>()
+    private var listOfBooks = mutableListOf<BookInfo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return BookListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.book_item, parent, false))
@@ -25,7 +26,7 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         movieViewHolder.bindView(listOfBooks[position])
     }
 
-    fun setList(listOfBooks: MutableList<Book>) {
+    fun setList(listOfBooks: MutableList<BookInfo>) {
         this.listOfBooks = listOfBooks
         notifyDataSetChanged()
     }
