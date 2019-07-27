@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Knihovna AllatRa</string>
+    <string name="action_settings">Nastavení</string>
+    <string name="action_language">Jazyk</string>
+    <string name="text_language_en">Anglicky</string>
+    <string name="text_language_ru">Rusky</string>
+    <string name="text_language_ua">Ukrajinsky</string>
+    <string name="text_language_cz">Česky</string>
+    <string name="text_language_bg">Bulharsky</string>
+    <string name="text_language_de">Německy</string>
+    <string name="text_language_pl">Polsky</string>
+    <string name="text_language_lt">Latinsky</string>
+    <string name="text_language_it">Italsky</string>
+</resources>

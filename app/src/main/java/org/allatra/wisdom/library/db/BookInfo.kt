@@ -11,7 +11,7 @@ open class BookInfo: RealmObject() {
 
     private var title: String? = null
 
-    private var language: String = EnLanguage.NONE.abbreviation
+    private var language: String = EnLanguage.EN.abbreviation
 
     private var pdfName: String? = null
 
