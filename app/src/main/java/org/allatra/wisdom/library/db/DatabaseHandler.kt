@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import org.allatra.wisdom.library.MainActivity
 import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.StaticDefinition
@@ -32,6 +31,9 @@ class DatabaseHandler(private val context: Context) {
     fun initDb(language: String){
         Log.i(TAG, "Language is $language")
         initRealm()
+        //deleteAllRecords()
+        // Init user settings
+        initUserSettings(language)
         // Try to fetch existing records
         listOfBooks = realm.where(BookInfo::class.java).findAll()
 
@@ -39,6 +41,7 @@ class DatabaseHandler(private val context: Context) {
             Log.i(TAG, "Db was initialized with new records.")
             realm.beginTransaction()
             createBooksEN()
+            createBooksRU()
             realm.commitTransaction()
 
             listOfBooks = realm.where(BookInfo::class.java).findAll()
@@ -47,21 +50,16 @@ class DatabaseHandler(private val context: Context) {
         }
     }
 
+    fun deleteAllRecords(){
+        realm.beginTransaction()
+        realm.deleteAll()
+        realm.commitTransaction()
+    }
+
     fun initUserSettings(language: String){
         var userSettings = UserSettings()
         userSettings.setId(0)
         userSettings.setLanguage(language)
-    }
-
-    fun deleteAll(){
-        //Realm.deleteRealm(config)
-        // Get a Realm instance for this thread
-        //realm = Realm.getDefaultInstance()
-        initRealm()
-
-        realm?.let {
-            it.deleteAll()
-        }
     }
 
     /**
@@ -70,7 +68,7 @@ class DatabaseHandler(private val context: Context) {
     private fun createBooksEN(){
         var book = BookInfo()
         // sensei 1
-        book.setId(1)
+        book.setId(StaticDefinition.sensei_1_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.sensei_1_title_en)
         book.setDescription(StaticDefinition.sensei_1_description_en)
@@ -82,7 +80,7 @@ class DatabaseHandler(private val context: Context) {
 
         // sensei 2
         book = BookInfo()
-        book.setId(2)
+        book.setId(StaticDefinition.sensei_2_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.sensei_2_title_en)
         book.setDescription(StaticDefinition.sensei_2_description_en)
@@ -94,7 +92,7 @@ class DatabaseHandler(private val context: Context) {
 
         // sensei 3
         book = BookInfo()
-        book.setId(3)
+        book.setId(StaticDefinition.sensei_3_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.sensei_3_title_en)
         book.setDescription(StaticDefinition.sensei_3_description_en)
@@ -106,7 +104,7 @@ class DatabaseHandler(private val context: Context) {
 
         // sensei 4
         book = BookInfo()
-        book.setId(4)
+        book.setId(StaticDefinition.sensei_4_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.sensei_4_title_en)
         book.setDescription(StaticDefinition.sensei_4_description_en)
@@ -118,7 +116,7 @@ class DatabaseHandler(private val context: Context) {
 
         // allatra
         book = BookInfo()
-        book.setId(5)
+        book.setId(StaticDefinition.allatra_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.allatra_title_en)
         book.setDescription(StaticDefinition.allatra_description_en)
@@ -130,7 +128,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Consciousness and Personality
         book = BookInfo()
-        book.setId(6)
+        book.setId(StaticDefinition.csc_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.csc_title_en)
         book.setDescription(StaticDefinition.csc_description_en)
@@ -142,7 +140,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Birds and stone
         book = BookInfo()
-        book.setId(7)
+        book.setId(StaticDefinition.birds_and_stone_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.birds_and_stone_title_en)
         book.setDescription(StaticDefinition.birds_and_stone_description_en)
@@ -154,7 +152,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Ezoosmos
         book = BookInfo()
-        book.setId(8)
+        book.setId(StaticDefinition.ezoosmos_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.ezoosmos_title_en)
         book.setDescription(StaticDefinition.ezoosmos_description_en)
@@ -166,7 +164,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Global climate: report
         book = BookInfo()
-        book.setId(9)
+        book.setId(StaticDefinition.global_climate_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.global_climate_title_en)
         book.setDescription(StaticDefinition.global_climate_description_en)
@@ -178,7 +176,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Practices and meditations
         book = BookInfo()
-        book.setId(10)
+        book.setId(StaticDefinition.practices_and_meditations_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.practices_and_meditations_title_en)
         book.setDescription(StaticDefinition.practices_and_meditations_description_en)
@@ -190,7 +188,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Predictions and future
         book = BookInfo()
-        book.setId(11)
+        book.setId(StaticDefinition.predictions_of_the_future_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.predictions_of_the_future_title_en)
         book.setDescription(StaticDefinition.predictions_of_the_future_description_en)
@@ -202,7 +200,7 @@ class DatabaseHandler(private val context: Context) {
 
         // Primordial allatra physics
         book = BookInfo()
-        book.setId(12)
+        book.setId(StaticDefinition.primordial_physics_id_en.toLong())
         book.setLanguage(EnumDefinition.EnLanguage.EN.abbreviation)
         book.setTitle(StaticDefinition.primordial_physics_title_en)
         book.setDescription(StaticDefinition.primordial_physics_description_en)
@@ -210,6 +208,160 @@ class DatabaseHandler(private val context: Context) {
         book.setTotalPages(StaticDefinition.primordial_physics_total_pages_en)
         book.setThumbNail(R.drawable.primordial_physics_en)
         book.setPdfName(StaticDefinition.primordial_physics_book_pdf_en)
+        realm.copyToRealm(book)
+    }
+
+    private fun createBooksRU() {
+        var book = BookInfo()
+        // sensei 1
+        book.setId(StaticDefinition.sensei_1_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.sensei_1_title_ru)
+        book.setDescription(StaticDefinition.sensei_1_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.sensei_1_total_pages_ru)
+        book.setThumbNail(R.drawable.sensei_1_ru)
+        book.setPdfName(StaticDefinition.sensei_1_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.sensei_2_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.sensei_2_title_ru)
+        book.setDescription(StaticDefinition.sensei_2_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.sensei_2_total_pages_ru)
+        book.setThumbNail(R.drawable.sensei_2_ru)
+        book.setPdfName(StaticDefinition.sensei_2_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.sensei_3_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.sensei_3_title_ru)
+        book.setDescription(StaticDefinition.sensei_3_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.sensei_3_total_pages_ru)
+        book.setThumbNail(R.drawable.sensei_3_ru)
+        book.setPdfName(StaticDefinition.sensei_3_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.sensei_4_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.sensei_4_title_ru)
+        book.setDescription(StaticDefinition.sensei_4_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.sensei_4_total_pages_ru)
+        book.setThumbNail(R.drawable.sensei_4_ru)
+        book.setPdfName(StaticDefinition.sensei_4_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.allatra_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.allatra_title_ru)
+        book.setDescription(StaticDefinition.allatra_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.allatra_total_pages_ru)
+        book.setThumbNail(R.drawable.allatra_ru)
+        book.setPdfName(StaticDefinition.allatra_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.csc_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.csc_title_ru)
+        book.setDescription(StaticDefinition.csc_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.csc_total_pages_ru)
+        book.setThumbNail(R.drawable.csc_ru)
+        book.setPdfName(StaticDefinition.csc_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.birds_and_stone_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.birds_and_stone_title_ru)
+        book.setDescription(StaticDefinition.birds_and_stone_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.birds_and_stone_total_pages_ru)
+        book.setThumbNail(R.drawable.birds_and_stone_ru)
+        book.setPdfName(StaticDefinition.birds_and_stone_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.ezoosmos_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.ezoosmos_title_ru)
+        book.setDescription(StaticDefinition.ezoosmos_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.ezoosmos_total_pages_ru)
+        book.setThumbNail(R.drawable.ezoosmos_book_ru)
+        book.setPdfName(StaticDefinition.ezoosmos_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.crossroads_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.crossroads_title_ru)
+        book.setDescription(StaticDefinition.crossroads_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.crossroads_total_pages_ru)
+        book.setThumbNail(R.drawable.crossroads_book_ru)
+        book.setPdfName(StaticDefinition.crossroads_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.global_climate_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.global_climate_title_ru)
+        book.setDescription(StaticDefinition.global_climate_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.global_climate_total_pages_ru)
+        book.setThumbNail(R.drawable.global_climate_ru)
+        book.setPdfName(StaticDefinition.global_climate_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.practices_and_meditations_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.practices_and_meditations_title_ru)
+        book.setDescription(StaticDefinition.practices_and_meditations_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.practices_and_meditations_total_pages_ru)
+        book.setThumbNail(R.drawable.practices_and_meditations_ru)
+        book.setPdfName(StaticDefinition.practices_and_meditations_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.predictions_of_the_future_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.predictions_of_the_future_title_ru)
+        book.setDescription(StaticDefinition.predictions_of_the_future_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.predictions_of_the_future_total_pages_ru)
+        book.setThumbNail(R.drawable.predictions_of_the_future_ru)
+        book.setPdfName(StaticDefinition.predictions_of_the_future_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.primordial_physics_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.primordial_physics_title_ru)
+        book.setDescription(StaticDefinition.primordial_physics_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.primordial_physics_total_pages_ru)
+        book.setThumbNail(R.drawable.primordial_physics_ru)
+        book.setPdfName(StaticDefinition.primordial_physics_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.universal_grain_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.universal_grain_title_ru)
+        book.setDescription(StaticDefinition.universal_grain_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.universal_grain_total_pages_ru)
+        book.setThumbNail(R.drawable.universal_grain_ru)
+        book.setPdfName(StaticDefinition.universal_grain_book_pdf_ru)
+        realm.copyToRealm(book)
+
+        book.setId(StaticDefinition.life_source_id_ru.toLong())
+        book.setLanguage(EnumDefinition.EnLanguage.RU.abbreviation)
+        book.setTitle(StaticDefinition.life_source_title_ru)
+        book.setDescription(StaticDefinition.life_source_description_ru)
+        book.setIndexPage(0)
+        book.setTotalPages(StaticDefinition.life_source_total_pages_ru)
+        book.setThumbNail(R.drawable.life_source_ru)
+        book.setPdfName(StaticDefinition.life_source_book_pdf_ru)
         realm.copyToRealm(book)
     }
 
