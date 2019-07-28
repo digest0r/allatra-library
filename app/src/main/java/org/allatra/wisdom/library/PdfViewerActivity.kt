@@ -24,8 +24,16 @@ class PdfViewerActivity : AppCompatActivity() {
             val indexPage = intent.getIntExtra(INDEX_PAGE, 0)
             val pdfBookId = intent.getIntExtra(PDF_BOOK_ID, 0)
 
+            Log.d(TAG, "Index of a page: $indexPage, Book id: $pdfBookId")
             val inputStream = resources.openRawResource(pdfBookId)
-            pdfViewerComponentInner.fromStream(inputStream).load()
+
+            pdfViewerComponentInner.
+                fromStream(inputStream)
+                //.enableSwipe(false)
+                .swipeHorizontal(true)
+                //.onPageChange(onPageChangeListener)
+                .defaultPage(indexPage)
+                .load()
         }
     }
 }
