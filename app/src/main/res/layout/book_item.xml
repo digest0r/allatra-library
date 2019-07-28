@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:app="http://schemas.android.com/apk/res-auto"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:background="@android:color/white">
+
+    <ImageView
+            android:id="@+id/thumbNail"
+            android:layout_width="110dp"
+            android:layout_height="150dp"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitXY"
+            android:src="@drawable/sensei_1_en"/>
+
+    <TextView
+            android:id="@+id/textBookName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/thumbNail"
+            tools:text="Sensei of Shambala. Book I"/>
+
+    <TextView
+            android:id="@+id/textReadPages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingStart="16dp"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:layout_constraintStart_toEndOf="@id/thumbNail"
+            app:layout_constraintTop_toBottomOf="@id/textBookName"
+            tools:text="Page: 1/100"/>
+
+    <TextView
+            android:id="@+id/textBookDescription"
+            android:layout_width="248dp"
+            android:layout_height="62dp"
+            android:layout_marginTop="12dp"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingStart="16dp"
+            android:textColor="@android:color/black"
+            android:ellipsize="end"
+            android:maxLines="4"
+            android:minLines="2"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/thumbNail"
+            app:layout_constraintTop_toBottomOf="@id/textReadPages"
+            tools:text="Sensei is wonderful book."/>
+</androidx.constraintlayout.widget.ConstraintLayout>

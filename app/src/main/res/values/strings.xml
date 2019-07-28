@@ -1,4 +1,14 @@
 <resources>
-    <string name="app_name">wisdom-library</string>
+    <string name="app_name">AllatRa library</string>
     <string name="action_settings">Settings</string>
+    <string name="action_language">Language</string>
+    <string name="text_language_en">English</string>
+    <string name="text_language_ru">Russian</string>
+    <string name="text_language_ua">Ukrainian</string>
+    <string name="text_language_cz">Czech</string>
+    <string name="text_language_bg">Bulgarian</string>
+    <string name="text_language_de">German</string>
+    <string name="text_language_pl">Polish</string>
+    <string name="text_language_lt">Latvian</string>
+    <string name="text_language_it">Italian</string>
 </resources>
