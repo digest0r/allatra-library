@@ -2,6 +2,7 @@ package org.allatra.wisdom.library.static
 
 object StaticDefinition {
     const val app_realm_name = "realm.books"
+    const val no_description = "----"
 
     // Sensei of Shambala. Book I
     const val sensei_1_id_en = 1
@@ -16,6 +17,12 @@ object StaticDefinition {
     const val sensei_1_total_pages_ru = 484
     const val sensei_1_book_pdf_ru = "sensei_1_book_pdf_ru.pdf"
 
+    const val sensei_1_id_ua = 28
+    const val sensei_1_title_ua = "СЕНСЕЙ. ОДВІЧНИЙ ШАМБАЛИ"
+    const val sensei_1_description_ua = no_description
+    const val sensei_1_total_pages_ua = 192
+    const val sensei_1_book_pdf_ua = "sensei_1_book_pdf_ua.pdf"
+
     // Sensei of Shambala. Book II
     const val sensei_2_id_en = 3
     const val sensei_2_title_en = "Sensei of Shambala. Book II"
@@ -28,6 +35,12 @@ object StaticDefinition {
     const val sensei_2_description_ru = "От Правды не сокроешься, от Мудрости не утаишь. Нет на Земле ничего тайного, чтобы когда-нибудь оно не стало явью."
     const val sensei_2_total_pages_ru = 264
     const val sensei_2_book_pdf_ru = "sensei_2_book_pdf_ru.pdf"
+
+    const val sensei_2_id_ua = 29
+    const val sensei_2_title_ua = "СЕНСЕЙ-II. ОДВІЧНИЙ ШАМБАЛИ"
+    const val sensei_2_description_ua = no_description
+    const val sensei_2_total_pages_ua = 97
+    const val sensei_2_book_pdf_ua = "sensei_2_book_pdf_ua.pdf"
 
     // Sensei of Shambala. Book III
     const val sensei_3_id_en = 5
@@ -68,6 +81,12 @@ object StaticDefinition {
     const val allatra_total_pages_ru = 880
     const val allatra_book_pdf_ru = "allatra_book_pdf_ru.pdf"
 
+    const val allatra_id_ua = 30
+    const val allatra_title_ua = "АллатРа"
+    const val allatra_description_ua = no_description
+    const val allatra_total_pages_ua = 537
+    const val allatra_book_pdf_ua = "allatra_book_pdf_ua.pdf"
+
     // Consciousness and Personality. From the inevitably dead to the eternally alive
     const val csc_id_en = 11
     const val csc_title_en = "Consciousness and Personality. From the inevitably dead to the eternally alive"
@@ -94,6 +113,12 @@ object StaticDefinition {
     const val birds_and_stone_total_pages_ru = 259
     const val birds_and_stone_book_pdf_ru = "birds_and_stone_book_pdf_ru.pdf"
 
+    const val birds_and_stone_id_ua = 31
+    const val birds_and_stone_title_ua = "ПТАХИ і КАМІНЬ. ОДВІЧНИЙ ШАМБАЛИ"
+    const val birds_and_stone_description_ua = no_description
+    const val birds_and_stone_total_pages_ua = 74
+    const val birds_and_stone_book_pdf_ua = "birds_and_stone_book_pdf_ua.pdf"
+
     // Ezoosmos
     const val ezoosmos_id_en = 15
     const val ezoosmos_title_en = "Ezoosmos"
@@ -117,15 +142,21 @@ object StaticDefinition {
     // On the Problems and Consequences of Global Climate Change on Earth
     const val global_climate_id_en = 18
     const val global_climate_title_en = "On the Problems and Consequences of Global Climate Change on Earth. Effective Ways to Solve These Problems"
-    const val global_climate_description_en = "----"
+    const val global_climate_description_en = no_description
     const val global_climate_total_pages_en = 53
     const val global_climate_book_pdf_en = "global_climate_book_pdf_en.pdf"
 
     const val global_climate_id_ru = 19
     const val global_climate_title_ru = "О проблемах и последствиях глобального изменения климата на Земле. Эффективные пути решения данных проблем"
-    const val global_climate_description_ru = "----"
+    const val global_climate_description_ru = no_description
     const val global_climate_total_pages_ru = 53
     const val global_climate_book_pdf_ru = "global_climate_book_pdf_ru.pdf"
+
+    const val global_climate_id_ua = 32
+    const val global_climate_title_ua = "Про проблеми та наслідки глобальної зміни клімату на Землі. Ефективні шляхи вирішення даних проблем"
+    const val global_climate_description_ua = no_description
+    const val global_climate_total_pages_ua = 50
+    const val global_climate_book_pdf_ua = "global_climate_book_pdf_ua.pdf"
 
     // Spiritual practices and meditations
     const val practices_and_meditations_id_en = 20
@@ -166,6 +197,12 @@ object StaticDefinition {
     const val primordial_physics_total_pages_ru = 106
     const val primordial_physics_book_pdf_ru = "primordial_physics_book_pdf_ru.pdf"
 
+    const val primordial_physics_id_ua = 33
+    const val primordial_physics_title_ua = "СПОКОНВІЧНА ФІЗИКА АЛЛАТРА"
+    const val primordial_physics_description_ua = "Доповідь «СПОКОНВІЧНА ФІЗИКА АЛЛАТРА» підготовлена інтернаціональною науково-дослідницькою групою ALLATRA SCIENCE"
+    const val primordial_physics_total_pages_ua = 106
+    const val primordial_physics_book_pdf_ua = "primordial_physics_book_pdf_ua.pdf"
+
     // The Universal grain
     const val universal_grain_id_ru = 26
     const val universal_grain_title_ru = "ЕДИНОЕ ЗЕРНО"
@@ -176,7 +213,7 @@ object StaticDefinition {
     // Life source
     const val life_source_id_ru = 27
     const val life_source_title_ru = "Живой источник (сборник)"
-    const val life_source_description_ru = "-----"
+    const val life_source_description_ru = no_description
     const val life_source_total_pages_ru = 257
     const val life_source_book_pdf_ru = "life_source_book_pdf_ru.pdf"
 }
