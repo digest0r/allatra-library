@@ -54,6 +54,27 @@ class MainActivity : AppCompatActivity() {
         localeManager.setLocale(this, localLang)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.action_settings -> true
+
+            R.id.action_language -> {
+                showDialogWithLanguages()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun showDialogWithLanguages(){
         val builder = AlertDialog.Builder(this@MainActivity)
 
@@ -124,34 +145,13 @@ class MainActivity : AppCompatActivity() {
         adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.EN))
     }
 
-    private fun initData(){
+    private fun initData() {
         databaseHandler?.let {
             it.initDb(Locale.getDefault().displayLanguage)
             val records = it.getFilteredBooks(EnumDefinition.EnLanguage.EN)
             Log.d(TAG, "Get records. Records = $records")
-        }?: run {
+        } ?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-
-            R.id.action_language -> {
-                showDialogWithLanguages()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 }
