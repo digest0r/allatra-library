@@ -3,6 +3,8 @@ package org.allatra.wisdom.library.static
 object StaticDefinition {
     const val app_realm_name = "realm.books"
     const val no_description = "----"
+    const val INDEX_PAGE = "indexPage"
+    const val PDF_BOOK_ID = "pdfBookId"
 
     // Sensei of Shambala. Book I
     const val sensei_1_id_en = 1

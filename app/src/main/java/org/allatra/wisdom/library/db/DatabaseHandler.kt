@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.kotlin.delete
 import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.StaticDefinition
@@ -25,6 +26,7 @@ class DatabaseHandler(private val context: Context) {
             .schemaVersion(3)
             .deleteRealmIfMigrationNeeded()
             .build()
+        //dropRealm(config)
         realm = Realm.getInstance(config)
     }
 
@@ -51,7 +53,11 @@ class DatabaseHandler(private val context: Context) {
         }
     }
 
-    fun deleteAllRecords(){
+    private fun dropRealm(realmConfiguration: RealmConfiguration){
+        Realm.deleteRealm(realmConfiguration)
+    }
+
+    private fun deleteAllRecords(){
         realm.beginTransaction()
         realm.deleteAll()
         realm.commitTransaction()
@@ -76,7 +82,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_1_total_pages_en)
         book.setThumbNail(R.drawable.sensei_1_en)
-        book.setPdfName(StaticDefinition.sensei_1_book_pdf_en)
+        book.setPdfBookId(R.raw.sensei_1_book_pdf_en)
         realm.copyToRealm(book)
 
         // sensei 2
@@ -88,7 +94,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_2_total_pages_en)
         book.setThumbNail(R.drawable.sensei_2_en)
-        book.setPdfName(StaticDefinition.sensei_2_book_pdf_en)
+        book.setPdfBookId(R.raw.sensei_2_book_pdf_en)
         realm.copyToRealm(book)
 
         // sensei 3
@@ -100,7 +106,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_3_total_pages_en)
         book.setThumbNail(R.drawable.sensei_3_en)
-        book.setPdfName(StaticDefinition.sensei_3_book_pdf_en)
+        book.setPdfBookId(R.raw.sensei_3_book_pdf_en)
         realm.copyToRealm(book)
 
         // sensei 4
@@ -112,7 +118,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_4_total_pages_en)
         book.setThumbNail(R.drawable.sensei_4_en)
-        book.setPdfName(StaticDefinition.sensei_4_book_pdf_en)
+        book.setPdfBookId(R.raw.sensei_4_book_pdf_en)
         realm.copyToRealm(book)
 
         // allatra
@@ -124,7 +130,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.allatra_total_pages_en)
         book.setThumbNail(R.drawable.allatra_en)
-        book.setPdfName(StaticDefinition.allatra_book_pdf_en)
+        book.setPdfBookId(R.raw.allatra_book_pdf_en)
         realm.copyToRealm(book)
 
         // Consciousness and Personality
@@ -136,7 +142,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.csc_total_pages_en)
         book.setThumbNail(R.drawable.csc_and_personality_en)
-        book.setPdfName(StaticDefinition.csc_book_pdf_en)
+        book.setPdfBookId(R.raw.csc_book_pdf_en)
         realm.copyToRealm(book)
 
         // Birds and stone
@@ -148,7 +154,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.birds_and_stone_total_pages_en)
         book.setThumbNail(R.drawable.birds_and_stone_en)
-        book.setPdfName(StaticDefinition.birds_and_stone_book_pdf_en)
+        book.setPdfBookId(R.raw.birds_and_stone_book_pdf_en)
         realm.copyToRealm(book)
 
         // Ezoosmos
@@ -160,7 +166,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.ezoosmos_total_pages_en)
         book.setThumbNail(R.drawable.ezoosmos_en)
-        book.setPdfName(StaticDefinition.ezoosmos_book_pdf_en)
+        book.setPdfBookId(R.raw.ezoosmos_book_pdf_en)
         realm.copyToRealm(book)
 
         // Global climate: report
@@ -172,7 +178,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.global_climate_total_pages_en)
         book.setThumbNail(R.drawable.global_climate_en)
-        book.setPdfName(StaticDefinition.global_climate_book_pdf_en)
+        book.setPdfBookId(R.raw.global_climate_book_pdf_en)
         realm.copyToRealm(book)
 
         // Practices and meditations
@@ -184,7 +190,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.practices_and_meditations_total_pages_en)
         book.setThumbNail(R.drawable.practices_and_meditations_en)
-        book.setPdfName(StaticDefinition.practices_and_meditations_book_pdf_en)
+        book.setPdfBookId(R.raw.practices_and_meditations_book_pdf_en)
         realm.copyToRealm(book)
 
         // Predictions and future
@@ -196,7 +202,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.predictions_of_the_future_total_pages_en)
         book.setThumbNail(R.drawable.predictions_of_the_future_en)
-        book.setPdfName(StaticDefinition.predictions_of_the_future_book_pdf_en)
+        book.setPdfBookId(R.raw.predictions_of_the_future_book_pdf_en)
         realm.copyToRealm(book)
 
         // Primordial allatra physics
@@ -208,7 +214,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.primordial_physics_total_pages_en)
         book.setThumbNail(R.drawable.primordial_physics_en)
-        book.setPdfName(StaticDefinition.primordial_physics_book_pdf_en)
+        book.setPdfBookId(R.raw.primordial_physics_book_pdf_en)
         realm.copyToRealm(book)
     }
 
@@ -222,7 +228,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_1_total_pages_ru)
         book.setThumbNail(R.drawable.sensei_1_ru)
-        book.setPdfName(StaticDefinition.sensei_1_book_pdf_ru)
+        book.setPdfBookId(R.raw.sensei_1_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.sensei_2_id_ru.toLong())
@@ -232,7 +238,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_2_total_pages_ru)
         book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.sensei_2_book_pdf_ru)
+        book.setPdfBookId(R.raw.sensei_2_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.sensei_3_id_ru.toLong())
@@ -242,7 +248,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_3_total_pages_ru)
         book.setThumbNail(R.drawable.sensei_3_ru)
-        book.setPdfName(StaticDefinition.sensei_3_book_pdf_ru)
+        book.setPdfBookId(R.raw.sensei_3_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.sensei_4_id_ru.toLong())
@@ -252,7 +258,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_4_total_pages_ru)
         book.setThumbNail(R.drawable.sensei_4_ru)
-        book.setPdfName(StaticDefinition.sensei_4_book_pdf_ru)
+        book.setPdfBookId(R.raw.sensei_4_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.allatra_id_ru.toLong())
@@ -262,7 +268,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.allatra_total_pages_ru)
         book.setThumbNail(R.drawable.allatra_ru)
-        book.setPdfName(StaticDefinition.allatra_book_pdf_ru)
+        book.setPdfBookId(R.raw.allatra_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.csc_id_ru.toLong())
@@ -272,7 +278,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.csc_total_pages_ru)
         book.setThumbNail(R.drawable.csc_ru)
-        book.setPdfName(StaticDefinition.csc_book_pdf_ru)
+        book.setPdfBookId(R.raw.csc_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.birds_and_stone_id_ru.toLong())
@@ -282,7 +288,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.birds_and_stone_total_pages_ru)
         book.setThumbNail(R.drawable.birds_and_stone_ru)
-        book.setPdfName(StaticDefinition.birds_and_stone_book_pdf_ru)
+        book.setPdfBookId(R.raw.birds_and_stone_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.ezoosmos_id_ru.toLong())
@@ -292,7 +298,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.ezoosmos_total_pages_ru)
         book.setThumbNail(R.drawable.ezoosmos_book_ru)
-        book.setPdfName(StaticDefinition.ezoosmos_book_pdf_ru)
+        book.setPdfBookId(R.raw.ezoosmos_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.crossroads_id_ru.toLong())
@@ -302,7 +308,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.crossroads_total_pages_ru)
         book.setThumbNail(R.drawable.crossroads_book_ru)
-        book.setPdfName(StaticDefinition.crossroads_book_pdf_ru)
+        book.setPdfBookId(R.raw.crossroads_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.global_climate_id_ru.toLong())
@@ -312,7 +318,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.global_climate_total_pages_ru)
         book.setThumbNail(R.drawable.global_climate_ru)
-        book.setPdfName(StaticDefinition.global_climate_book_pdf_ru)
+        book.setPdfBookId(R.raw.global_climate_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.practices_and_meditations_id_ru.toLong())
@@ -322,7 +328,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.practices_and_meditations_total_pages_ru)
         book.setThumbNail(R.drawable.practices_and_meditations_ru)
-        book.setPdfName(StaticDefinition.practices_and_meditations_book_pdf_ru)
+        book.setPdfBookId(R.raw.practices_and_meditations_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.predictions_of_the_future_id_ru.toLong())
@@ -332,7 +338,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.predictions_of_the_future_total_pages_ru)
         book.setThumbNail(R.drawable.predictions_of_the_future_ru)
-        book.setPdfName(StaticDefinition.predictions_of_the_future_book_pdf_ru)
+        book.setPdfBookId(R.raw.predictions_of_the_future_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.primordial_physics_id_ru.toLong())
@@ -342,7 +348,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.primordial_physics_total_pages_ru)
         book.setThumbNail(R.drawable.primordial_physics_ru)
-        book.setPdfName(StaticDefinition.primordial_physics_book_pdf_ru)
+        book.setPdfBookId(R.raw.primordial_physics_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.universal_grain_id_ru.toLong())
@@ -352,7 +358,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.universal_grain_total_pages_ru)
         book.setThumbNail(R.drawable.universal_grain_ru)
-        book.setPdfName(StaticDefinition.universal_grain_book_pdf_ru)
+        book.setPdfBookId(R.raw.universal_grain_book_pdf_ru)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.life_source_id_ru.toLong())
@@ -362,7 +368,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.life_source_total_pages_ru)
         book.setThumbNail(R.drawable.life_source_ru)
-        book.setPdfName(StaticDefinition.life_source_book_pdf_ru)
+        book.setPdfBookId(R.raw.life_source_book_pdf_ru)
         realm.copyToRealm(book)
     }
 
@@ -376,7 +382,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_1_total_pages_ua)
         book.setThumbNail(R.drawable.sensei_1_ru)
-        book.setPdfName(StaticDefinition.sensei_1_book_pdf_ua)
+        book.setPdfBookId(R.raw.sensei_1_book_pdf_ua)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.sensei_2_id_ua.toLong())
@@ -386,7 +392,7 @@ class DatabaseHandler(private val context: Context) {
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.sensei_2_total_pages_ua)
         book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.sensei_2_book_pdf_ua)
+        book.setPdfBookId(R.raw.sensei_2_book_pdf_ua)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.allatra_id_ua.toLong())
@@ -395,8 +401,8 @@ class DatabaseHandler(private val context: Context) {
         book.setDescription(StaticDefinition.allatra_description_ua)
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.allatra_total_pages_ua)
-        book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.allatra_book_pdf_ua)
+        book.setThumbNail(R.drawable.allatra_ru)
+        book.setPdfBookId(R.raw.allatra_book_pdf_ua)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.birds_and_stone_id_ua.toLong())
@@ -405,8 +411,8 @@ class DatabaseHandler(private val context: Context) {
         book.setDescription(StaticDefinition.birds_and_stone_description_ua)
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.birds_and_stone_total_pages_ua)
-        book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.birds_and_stone_book_pdf_ua)
+        book.setThumbNail(R.drawable.birds_and_stone_ru)
+        book.setPdfBookId(R.raw.birds_and_stone_book_pdf_ua)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.global_climate_id_ua.toLong())
@@ -415,8 +421,8 @@ class DatabaseHandler(private val context: Context) {
         book.setDescription(StaticDefinition.global_climate_description_ua)
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.global_climate_total_pages_ua)
-        book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.global_climate_book_pdf_ua)
+        book.setThumbNail(R.drawable.global_climate_ru)
+        book.setPdfBookId(R.raw.global_climate_book_pdf_ua)
         realm.copyToRealm(book)
 
         book.setId(StaticDefinition.primordial_physics_id_ua.toLong())
@@ -425,8 +431,8 @@ class DatabaseHandler(private val context: Context) {
         book.setDescription(StaticDefinition.primordial_physics_description_ua)
         book.setIndexPage(0)
         book.setTotalPages(StaticDefinition.primordial_physics_total_pages_ua)
-        book.setThumbNail(R.drawable.sensei_2_ru)
-        book.setPdfName(StaticDefinition.primordial_physics_book_pdf_ua)
+        book.setThumbNail(R.drawable.primordial_physics_ru)
+        book.setPdfBookId(R.raw.primordial_physics_book_pdf_ua)
         realm.copyToRealm(book)
     }
 

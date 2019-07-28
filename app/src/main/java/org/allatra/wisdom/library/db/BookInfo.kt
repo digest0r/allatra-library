@@ -13,7 +13,7 @@ open class BookInfo: RealmObject() {
 
     private var language: String = EnLanguage.EN.abbreviation
 
-    private var pdfName: String? = null
+    private var pdfBookId: Int = 0
 
     private var description: String? = null
 
@@ -25,7 +25,7 @@ open class BookInfo: RealmObject() {
 
     fun getId(): Long = id
     fun getTitle(): String? = title
-    fun getPdfName(): String? = pdfName
+    fun getPdfBookId(): Int? = pdfBookId
     fun getDescription(): String? = description
     fun getIndexPage(): Int = indexPage
     fun getTotalPages(): Int = totalPages
@@ -47,8 +47,8 @@ open class BookInfo: RealmObject() {
         this.title = title
     }
 
-    fun setPdfName(pdfName: String){
-        this.pdfName = pdfName
+    fun setPdfBookId(pdfBookId: Int){
+        this.pdfBookId = pdfBookId
     }
 
     fun setDescription(description: String){
