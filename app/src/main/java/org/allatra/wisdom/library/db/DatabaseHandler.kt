@@ -9,13 +9,17 @@ import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.StaticDefinition
 
-class DatabaseHandler(private val context: Context) {
-
+class DatabaseHandler() {
     private lateinit var realm: Realm
-    private lateinit var listOfBooks: MutableList<BookInfo>
+    private lateinit var context: Context
 
     companion object {
         private const val TAG = "DB"
+    }
+
+    constructor(context: Context) : this() {
+        this.context = context
+        initRealm()
     }
 
     private fun initRealm(){
@@ -30,14 +34,13 @@ class DatabaseHandler(private val context: Context) {
         realm = Realm.getInstance(config)
     }
 
-    fun initDb(language: String){
+    fun getListOfBookInfo(language: String): MutableList<BookInfo>{
         Log.i(TAG, "Language is $language")
-        initRealm()
         //deleteAllRecords()
         // Init user settings
         initUserSettings(language)
         // Try to fetch existing records
-        listOfBooks = realm.where(BookInfo::class.java).findAll()
+        var listOfBooks = realm.where(BookInfo::class.java).findAll()
 
         if(listOfBooks.size==0){
             Log.i(TAG, "Db was initialized with new records.")
@@ -51,6 +54,8 @@ class DatabaseHandler(private val context: Context) {
         } else {
             Log.i(TAG, "Db has records. Size: ${listOfBooks.size}")
         }
+
+        return listOfBooks
     }
 
     private fun dropRealm(realmConfiguration: RealmConfiguration){
@@ -63,7 +68,7 @@ class DatabaseHandler(private val context: Context) {
         realm.commitTransaction()
     }
 
-    fun initUserSettings(language: String){
+   private fun initUserSettings(language: String){
         var userSettings = UserSettings()
         userSettings.setId(0)
         userSettings.setLanguage(language)
@@ -436,7 +441,13 @@ class DatabaseHandler(private val context: Context) {
         realm.copyToRealm(book)
     }
 
-    fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {
-        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.getId() }.toMutableList()
+    fun getBookInfoById(id: Long): BookInfo?{
+        return realm.where(BookInfo::class.java).equalTo("id", id).findFirst()
+    }
+    fun updateBookInfo(bookInfo: BookInfo, indexPage: Int){
+        realm.beginTransaction()
+        bookInfo.setIndexPage(indexPage)
+        realm.copyToRealmOrUpdate(bookInfo)
+        realm.commitTransaction()
     }
 }

@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat.startActivity
 import org.allatra.wisdom.library.PdfViewerActivity
 import org.allatra.wisdom.library.static.StaticDefinition.INDEX_PAGE
 import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_ID
+import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_RES_ID
 
 class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -44,7 +45,9 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 val context = bookViewHolder.itemView.context
                 val intent = Intent(context, PdfViewerActivity::class.java)
                 intent.putExtra(INDEX_PAGE, listOfBooks[position].getIndexPage())
-                intent.putExtra(PDF_BOOK_ID, listOfBooks[position].getPdfBookId())
+                intent.putExtra(PDF_BOOK_ID, listOfBooks[position].getId())
+                intent.putExtra(PDF_BOOK_RES_ID, listOfBooks[position].getPdfBookId())
+
                 startActivity(context, intent, intent.extras)
             }
         })

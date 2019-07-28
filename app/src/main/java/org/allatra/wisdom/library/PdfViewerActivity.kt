@@ -4,10 +4,16 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.github.barteksc.pdfviewer.PDFView
+import org.allatra.wisdom.library.db.DatabaseHandler
 import org.allatra.wisdom.library.static.StaticDefinition.INDEX_PAGE
 import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_ID
+import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_RES_ID
+import org.allatra.wisdom.library.view.PdfViewerPageChangeListener
 
 class PdfViewerActivity : AppCompatActivity() {
+
+    private lateinit var pdfViewerPageChangeListener: PdfViewerPageChangeListener
+    private lateinit var databaseHandler: DatabaseHandler
 
     companion object {
         private const val TAG = "PdfViewerActivity"
@@ -16,22 +22,26 @@ class PdfViewerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pdf_viewer)
+        databaseHandler = DatabaseHandler(this)
 
         val pdfViewerComponent = findViewById<PDFView>(R.id.pdfView)
 
         pdfViewerComponent?.let { pdfViewerComponentInner ->
             val intent = intent
             val indexPage = intent.getIntExtra(INDEX_PAGE, 0)
-            val pdfBookId = intent.getIntExtra(PDF_BOOK_ID, 0)
+            val pdfId = intent.getLongExtra(PDF_BOOK_ID, 0)
+            val pdfBookId = intent.getIntExtra(PDF_BOOK_RES_ID, 0)
 
-            Log.d(TAG, "Index of a page: $indexPage, Book id: $pdfBookId")
+            pdfViewerPageChangeListener = PdfViewerPageChangeListener(databaseHandler, pdfId)
+
+            Log.d(TAG, "Index of a page: $indexPage, BookId: $pdfId, BookResId: $pdfBookId")
             val inputStream = resources.openRawResource(pdfBookId)
 
             pdfViewerComponentInner.
                 fromStream(inputStream)
                 //.enableSwipe(false)
                 .swipeHorizontal(true)
-                //.onPageChange(onPageChangeListener)
+                .onPageChange(pdfViewerPageChangeListener)
                 .defaultPage(indexPage)
                 .load()
         }

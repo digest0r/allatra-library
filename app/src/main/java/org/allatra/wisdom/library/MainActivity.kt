@@ -16,6 +16,7 @@ import org.allatra.wisdom.library.decoration.DividerItemDecoration
 import org.allatra.wisdom.library.decoration.VerticalSpaceItemDecoration
 import org.allatra.wisdom.library.static.EnumDefinition
 import android.content.res.Configuration
+import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 
@@ -24,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     private val localeManager = LocaleManager()
     var alertLanguages: AlertDialog? = null
     private lateinit var adapter: BookListAdapter
+    // Book list must be defined there as this instance operates with it
+    private lateinit var listOfBooks: MutableList<BookInfo>
     private var localLang: String = "English"
 
     companion object {
@@ -85,28 +88,28 @@ class MainActivity : AppCompatActivity() {
                 0 -> {
                     localLang = getString(R.string.text_language_en)
                     Log.d(TAG, "Language is changed to: $item, EN")
-                    adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.EN))
+                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
                     localeManager.setLocale(this, localLang)
                 }
 
                 1 -> {
                     localLang = getString(R.string.text_language_ru)
                     Log.d(TAG, "Language is changed to: $item, RU")
-                    adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.RU))
+                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.RU))
                     localeManager.setLocale(this, localLang)
                 }
 
                 2 ->{
                     localLang = getString(R.string.text_language_ua)
                     Log.d(TAG, "Language is changed to: $item, UA")
-                    adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.UA))
+                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.UA))
                     localeManager.setLocale(this, localLang)
                 }
 
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
                     Log.d(TAG, "Language is changed to: $item, CZ")
-                    adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.CZ))
+                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.CZ))
                     localeManager.setLocale(this, localLang)
                     attachBaseContext(this)
                 }
@@ -142,16 +145,20 @@ class MainActivity : AppCompatActivity() {
         // Init adapter
         adapter = BookListAdapter()
         recyclerViewBooks.adapter = adapter
-        adapter.setList(databaseHandler!!.getFilteredBooks(EnumDefinition.EnLanguage.EN))
+        adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
     }
 
     private fun initData() {
         databaseHandler?.let {
-            it.initDb(Locale.getDefault().displayLanguage)
-            val records = it.getFilteredBooks(EnumDefinition.EnLanguage.EN)
+            listOfBooks = it.getListOfBookInfo(Locale.getDefault().displayLanguage)
+            val records = getFilteredBooks(EnumDefinition.EnLanguage.EN)
             Log.d(TAG, "Get records. Records = $records")
         } ?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
         }
+    }
+
+    fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {
+        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.getId() }.toMutableList()
     }
 }
