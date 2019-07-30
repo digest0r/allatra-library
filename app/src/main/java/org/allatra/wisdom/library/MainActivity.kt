@@ -1,5 +1,7 @@
 package org.allatra.wisdom.library
 
+import android.app.Activity
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +21,9 @@ import android.content.res.Configuration
 import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
+import android.content.Intent
+
+
 
 class MainActivity : AppCompatActivity() {
     private var databaseHandler: DatabaseHandler? = null
@@ -28,9 +33,11 @@ class MainActivity : AppCompatActivity() {
     // Book list must be defined there as this instance operates with it
     private lateinit var listOfBooks: MutableList<BookInfo>
     private var localLang: String = "English"
+    private var localLanguage: EnumDefinition.EnLanguage? = null
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val WRONG_PDF_ID = 111111
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +50,25 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayUseLogoEnabled(true)
 
         databaseHandler = DatabaseHandler(this)
-        //localeManager = LocaleManager()
         initData()
         initView()
+    }
+
+    /**
+     * On activityResult we have to update list in the adapter as number of actual page might have changed.
+     */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        Log.d(TAG, "Activity result.")
+        if (resultCode == RESULT_OK && intent != null) {
+            val pdfId = intent.getLongExtra("pdfId", WRONG_PDF_ID.toLong())
+
+            if(pdfId != WRONG_PDF_ID.toLong()){
+                adapter.setList(getFilteredBooks(localLanguage!!))
+            }
+        } else {
+            Log.e(TAG, "ResultCode=$resultCode, requestCode=$requestCode, $intent")
+        }
     }
 
     override fun attachBaseContext(context: Context) {
@@ -87,29 +110,33 @@ class MainActivity : AppCompatActivity() {
             when (item) {
                 0 -> {
                     localLang = getString(R.string.text_language_en)
+                    localLanguage = EnumDefinition.EnLanguage.EN
                     Log.d(TAG, "Language is changed to: $item, EN")
-                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
+                    adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
 
                 1 -> {
                     localLang = getString(R.string.text_language_ru)
+                    localLanguage = EnumDefinition.EnLanguage.RU
                     Log.d(TAG, "Language is changed to: $item, RU")
-                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.RU))
+                    adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
 
                 2 ->{
                     localLang = getString(R.string.text_language_ua)
+                    localLanguage = EnumDefinition.EnLanguage.UA
                     Log.d(TAG, "Language is changed to: $item, UA")
-                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.UA))
+                    adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
 
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
+                    localLanguage = EnumDefinition.EnLanguage.CZ
                     Log.d(TAG, "Language is changed to: $item, CZ")
-                    adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.CZ))
+                    adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                     attachBaseContext(this)
                 }
@@ -145,6 +172,7 @@ class MainActivity : AppCompatActivity() {
         // Init adapter
         adapter = BookListAdapter()
         recyclerViewBooks.adapter = adapter
+        localLanguage = EnumDefinition.EnLanguage.EN
         adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
     }
 
