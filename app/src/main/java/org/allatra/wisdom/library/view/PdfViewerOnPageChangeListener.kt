@@ -5,8 +5,8 @@ import com.github.barteksc.pdfviewer.listener.OnPageChangeListener
 import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.db.DatabaseHandler
 
-class PdfViewerPageChangeListener(val databaseHandler: DatabaseHandler,
-                                  var bookId: Long
+class PdfViewerOnPageChangeListener(val databaseHandler: DatabaseHandler,
+                                    var bookId: Long
 ): OnPageChangeListener{
 
     private var bookInfo: BookInfo? = null

@@ -39,7 +39,8 @@
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@id/thumbNail"
             app:layout_constraintTop_toBottomOf="@id/textBookName"
-            tools:text="Page: 1/100"/>
+            tools:text="Page: 1/100" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/textBookDescription" android:layout_marginRight="8dp"/>
 
     <TextView
             android:id="@+id/textBookDescription"

@@ -22,7 +22,8 @@ import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 import android.content.Intent
-
+import android.content.res.Resources
+import androidx.core.os.ConfigurationCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -178,9 +179,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun initData() {
         databaseHandler?.let {
+            // Language of app
+            val lang = Locale.getDefault().displayLanguage
+            // System language
+            val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
+            // Actual lang
+            val actualLang = systemLangList[0]
+
             listOfBooks = it.getListOfBookInfo(Locale.getDefault().displayLanguage)
-            val records = getFilteredBooks(EnumDefinition.EnLanguage.EN)
-            Log.d(TAG, "Get records. Records = $records")
         } ?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
         }
