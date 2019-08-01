@@ -1,8 +1,5 @@
 package org.allatra.wisdom.library.adapter
 
-import android.app.Activity.RESULT_OK
-import android.app.PendingIntent.FLAG_ONE_SHOT
-import android.app.PendingIntent.getActivity
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,14 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.view.BookListViewHolder
-import android.content.Intent
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.ContextCompat.startActivity
-import org.allatra.wisdom.library.MainActivity
-import org.allatra.wisdom.library.PdfViewerActivity
-import org.allatra.wisdom.library.static.StaticDefinition.INDEX_PAGE
-import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_ID
-import org.allatra.wisdom.library.static.StaticDefinition.PDF_BOOK_RES_ID
 
 class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -46,15 +35,31 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         bookViewHolder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 Log.d(TAG, "Position clicked: $position, Book to open: ${listOfBooks[position].getTitle()}")
+                val context = bookViewHolder.itemView.context
+
+
+//                val reader = BufferedReader(
+//                    InputStreamReader(context.assets.open("sensei_1_book_en.epub"))
+//                )
+//                val i = 6
+
+                //
+                //
+                //folioReader.openBook(R.raw.sensei_1_book_en)
+                //folioReader.openBook("file://android_asset/sensei_1_book_en.epub")
+                //folioReader.openBook("file:///android_asset/sensei_1_book_en.epub")
+
+
+
 
                 //Create an intent to pass previous user data
-                val context = bookViewHolder.itemView.context
-                val intent = Intent(context, PdfViewerActivity::class.java)
-                intent.putExtra(INDEX_PAGE, listOfBooks[position].getIndexPage())
-                intent.putExtra(PDF_BOOK_ID, listOfBooks[position].getId())
-                intent.putExtra(PDF_BOOK_RES_ID, listOfBooks[position].getPdfBookId())
-
-                startActivityForResult(context as MainActivity, intent, REQUEST_CODE, intent.extras)
+//                val context = bookViewHolder.itemView.context
+//                val intent = Intent(context, PdfViewerActivity::class.java)
+//                intent.putExtra(INDEX_PAGE, listOfBooks[position].getIndexPage())
+//                intent.putExtra(PDF_BOOK_ID, listOfBooks[position].getId())
+//                intent.putExtra(PDF_BOOK_RES_ID, listOfBooks[position].getPdfBookId())
+//
+//                startActivityForResult(context as MainActivity, intent, REQUEST_CODE, intent.extras)
             }
         })
     }
