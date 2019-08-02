@@ -1,4 +1,4 @@
-package org.allatra.wisdom.library.view
+package org.allatra.wisdom.library.ui.listener
 
 import android.util.Log
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener

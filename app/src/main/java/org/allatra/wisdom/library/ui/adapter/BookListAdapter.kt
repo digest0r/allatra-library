@@ -1,4 +1,4 @@
-package org.allatra.wisdom.library.adapter
+package org.allatra.wisdom.library.ui.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import org.allatra.wisdom.library.R
 import org.allatra.wisdom.library.db.BookInfo
-import org.allatra.wisdom.library.view.BookListViewHolder
+import org.allatra.wisdom.library.ui.view.BookListViewHolder
 
 class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -19,7 +19,13 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return BookListViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.book_item, parent, false))
+        return BookListViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                R.layout.book_item,
+                parent,
+                false
+            )
+        )
     }
 
     override fun getItemCount(): Int = listOfBooks.size

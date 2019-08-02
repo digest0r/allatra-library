@@ -1,4 +1,4 @@
-package org.allatra.wisdom.library.view
+package org.allatra.wisdom.library.ui.listener
 
 import android.content.Intent
 import android.util.Log

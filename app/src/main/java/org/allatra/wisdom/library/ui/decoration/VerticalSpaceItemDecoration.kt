@@ -1,4 +1,4 @@
-package org.allatra.wisdom.library.decoration
+package org.allatra.wisdom.library.ui.decoration
 
 import android.graphics.Rect
 import android.view.View

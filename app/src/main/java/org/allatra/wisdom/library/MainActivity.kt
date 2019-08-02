@@ -1,7 +1,5 @@
 package org.allatra.wisdom.library
 
-import android.app.Activity
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -12,10 +10,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import org.allatra.wisdom.library.adapter.BookListAdapter
+import org.allatra.wisdom.library.ui.adapter.BookListAdapter
 import org.allatra.wisdom.library.db.DatabaseHandler
-import org.allatra.wisdom.library.decoration.DividerItemDecoration
-import org.allatra.wisdom.library.decoration.VerticalSpaceItemDecoration
+import org.allatra.wisdom.library.ui.decoration.DividerItemDecoration
+import org.allatra.wisdom.library.ui.decoration.VerticalSpaceItemDecoration
 import org.allatra.wisdom.library.static.EnumDefinition
 import android.content.res.Configuration
 import org.allatra.wisdom.library.db.BookInfo
