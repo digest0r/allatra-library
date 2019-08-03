@@ -20,8 +20,16 @@ import org.allatra.wisdom.library.db.BookInfo
 import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.core.os.ConfigurationCompat
+import org.readium.r2.streamer.parser.EpubParser
+import org.readium.r2.streamer.server.Server
+import timber.log.Timber
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.net.ServerSocket
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,10 +41,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listOfBooks: MutableList<BookInfo>
     private var localLang: String = "English"
     private var localLanguage: EnumDefinition.EnLanguage? = null
+    private lateinit var workingDir: String
+    private lateinit var preferences: SharedPreferences
+
+    protected lateinit var server: Server
+    private var localPort: Int = 0
 
     companion object {
         private const val TAG = "MainActivity"
         private const val WRONG_PDF_ID = 111111
+        private const val ASSETS_BOOKS_ROOT = "books"
+        private const val SHARED_PREFERENCES_NAME = "org.allatra.wisdow"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayUseLogoEnabled(true)
 
         databaseHandler = DatabaseHandler(this)
+        initServer()
         initData()
         initView()
     }
@@ -97,6 +113,52 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        startServer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopServer()
+    }
+
+    private fun readBooksFromAssetsByLanguage(enLanguage: EnumDefinition.EnLanguage){
+        assets.list(ASSETS_BOOKS_ROOT+"/${enLanguage.abbreviation}")?.filter { it.endsWith(".epub") }?.let { list ->
+            list.forEach { book ->
+                Log.d(TAG, "Book processing: $book")
+
+                val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$book")
+                val fileUUID = UUID.randomUUID()
+                val publicationPath = workingDir + fileUUID
+
+                inputStream.writeToFile(publicationPath)
+                val file = File(publicationPath)
+
+                val epubParser = EpubParser()
+                val pubBox = epubParser.parse(publicationPath)
+
+                if(pubBox!=null){
+                    //Add publication port to preferences
+                    val publicationIdentifier = pubBox.publication.metadata.identifier
+                    preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString()).apply()
+
+                    databaseHandler!!.createBookInfoObject(pubBox)
+                } else {
+                    Log.d(TAG, "Book: pupBox is null.")
+                }
+            }
+        }
+    }
+
+
+
+    private fun InputStream.writeToFile(path: String) {
+        use { input ->
+            File(path).outputStream().use { input.copyTo(it) }
         }
     }
 
@@ -161,6 +223,29 @@ class MainActivity : AppCompatActivity() {
         return languagesTextArray
     }
 
+    private fun startServer() {
+        if (!server.isAlive) {
+            try {
+                server.start()
+            } catch (e: IOException) {
+                // do nothing
+                Timber.e(e)
+            }
+            if (server.isAlive) {
+                // Add Resources from R2Navigator
+                server.loadReadiumCSSResources(assets)
+                server.loadR2ScriptResources(assets)
+                server.loadR2FontResources(assets, applicationContext)
+            }
+        }
+    }
+
+    private fun stopServer() {
+        if (server.isAlive) {
+            server.stop()
+        }
+    }
+
     private fun initView(){
         recyclerViewBooks.layoutManager = LinearLayoutManager(this)
         recyclerViewBooks.addItemDecoration(VerticalSpaceItemDecoration(48))
@@ -176,6 +261,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initData() {
+        // Init share preferences
+        preferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        // Init working dir
+        workingDir = this.filesDir.path + "/"
+        Log.d(TAG, "Working dir set to: $workingDir")
+
+        readBooksFromAssetsByLanguage(EnumDefinition.EnLanguage.EN)
         databaseHandler?.let {
             // Language of app
             val lang = Locale.getDefault().displayLanguage
@@ -188,6 +280,15 @@ class MainActivity : AppCompatActivity() {
         } ?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
         }
+    }
+
+    private fun initServer(){
+        val s = ServerSocket(0)
+        s.localPort
+        s.close()
+
+        localPort = s.localPort
+        server = Server(localPort)
     }
 
     fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {

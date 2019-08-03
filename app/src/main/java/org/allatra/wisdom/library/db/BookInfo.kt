@@ -4,32 +4,36 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.EnumDefinition.EnLanguage
+import org.joda.time.DateTime
+import org.readium.r2.shared.Publication
 
 open class BookInfo: RealmObject() {
     @PrimaryKey
     private var id: Long = 0
 
+    private var fileName: String? = null
+
     private var title: String? = null
+
+    private val author: String? = null
+
+    private val fileUrl: String? = null
+
+    private val coverLink: String? = null
+
+    private val identifier: String? = null
+
+    private val cover: ByteArray? = null
+
+    private val ext: Publication.EXTENSION = Publication.EXTENSION.EPUB
+
+    private val creation:Long = DateTime().toDate().time
 
     private var language: String = EnLanguage.EN.abbreviation
 
-    private var pdfBookId: Int = 0
-
-    private var description: String? = null
-
-    private var indexPage: Int = 0
-
-    private var totalPages: Int = 0
-
-    private var thumbNail: Int = 0
-
     fun getId(): Long = id
     fun getTitle(): String? = title
-    fun getPdfBookId(): Int? = pdfBookId
-    fun getDescription(): String? = description
-    fun getIndexPage(): Int = indexPage
-    fun getTotalPages(): Int = totalPages
-    fun getThumbNail(): Int = thumbNail
+
     fun getLanguage(): String = language
     fun getLanguageEnum(): EnLanguage {
         return EnumDefinition.EnLanguage.valueOf(language.toUpperCase())
@@ -45,25 +49,5 @@ open class BookInfo: RealmObject() {
 
     fun setTitle(title: String){
         this.title = title
-    }
-
-    fun setPdfBookId(pdfBookId: Int){
-        this.pdfBookId = pdfBookId
-    }
-
-    fun setDescription(description: String){
-        this.description = description
-    }
-
-    fun setIndexPage(indexPage: Int){
-        this.indexPage = indexPage
-    }
-
-    fun setTotalPages(totalPages: Int){
-        this.totalPages = totalPages
-    }
-
-    fun setThumbNail(thumbNail: Int){
-        this.thumbNail = thumbNail
     }
 }

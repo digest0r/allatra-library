@@ -10,6 +10,7 @@
             android:id="@+id/thumbNail"
             android:layout_width="110dp"
             android:layout_height="150dp"
+            android:padding="4dp"
             android:contentDescription="@string/app_name"
             android:scaleType="fitXY"
             android:src="@drawable/sensei_1_en"/>
