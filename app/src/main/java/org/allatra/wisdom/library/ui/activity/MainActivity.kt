@@ -22,7 +22,9 @@ import java.util.*
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.provider.Settings
 import android.util.TypedValue
+import android.widget.ImageView
 import androidx.core.os.ConfigurationCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,8 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.ServerSocket
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 
 
@@ -66,9 +70,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayShowCustomEnabled(true)
-        supportActionBar!!.setLogo(R.mipmap.lotus_flower)
-        supportActionBar!!.setDisplayUseLogoEnabled(true)
+//        supportActionBar!!.setDisplayShowCustomEnabled(true)
+//        supportActionBar!!.setLogo(R.mipmap.lotus_flower)
+//        supportActionBar!!.setDisplayUseLogoEnabled(true)
 
         databaseHandler = DatabaseHandler(this)
         initServer()
@@ -275,19 +279,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView(){
+        // Init collapsing toolbar
+        initCollapsingToolbar()
         // Init adapter
         adapter = BookListAdapter()
         localLanguage = EnumDefinition.EnLanguage.EN
         adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
+        val backDrop = findViewById<ImageView>(R.id.backdrop)
+        backDrop.setImageResource(R.drawable.big_lotus)
 
-        val recyclerView = findViewById(R.id.recyclerViewBooks) as RecyclerView
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewBooks)
         val mLayoutManager = GridLayoutManager(this, 2)
 
         recyclerView.layoutManager = mLayoutManager
         recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 10, true, this))
         recyclerView.itemAnimator = DefaultItemAnimator() as RecyclerView.ItemAnimator?
         recyclerView.adapter = adapter
-        //adapter.notifyDataSetChanged()
     }
 
     private fun initData() {
@@ -323,5 +330,37 @@ class MainActivity : AppCompatActivity() {
 
     fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {
         return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.getId() }.toMutableList()
+    }
+
+     /**
+     * Initializing collapsing toolbar
+     * Will show and hide the toolbar title on scroll
+     */
+    private fun initCollapsingToolbar() {
+        val collapsingToolbar = findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar)
+
+        collapsingToolbar.title = " "
+        val appBarLayout = findViewById<AppBarLayout>(R.id.appbar)
+        appBarLayout.setExpanded(true)
+
+         appBarLayout.addOnOffsetChangedListener(
+             object: AppBarLayout.OnOffsetChangedListener{
+                 override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
+                     var isShow = false
+                     var scrollRange = -1
+
+                     if (scrollRange == -1) {
+                         scrollRange = appBarLayout!!.totalScrollRange
+                     }
+
+                     if (scrollRange + verticalOffset == 0) {
+                         collapsingToolbar.title = getString(R.string.app_name)
+                         isShow = true
+                     } else if (isShow) {
+                         collapsingToolbar.title = " "
+                     }
+                 }
+             }
+         )
     }
 }

@@ -36,6 +36,7 @@ open class BookInfo: RealmObject() {
     fun getIdentifier(): String? = identifier
     fun getCover(): ByteArray? = cover
     fun getFileName(): String? = fileName
+    fun getAuthor(): String? = author
 
     fun getLanguageEnum(): EnLanguage {
         return EnumDefinition.EnLanguage.valueOf(language.toUpperCase())

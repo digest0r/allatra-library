@@ -24,13 +24,14 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>
 
     inner class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTitle: TextView = itemView.findViewById<View>(R.id.title) as TextView
+        val textViewAuthor: TextView = itemView.findViewById<View>(R.id.author) as TextView
         val thumbNail: ImageView = itemView.findViewById(R.id.thumbnail) as ImageView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookListViewHolder {
         return BookListViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.book_item2,
+                R.layout.book_item,
                 parent,
                 false
             )
@@ -50,13 +51,17 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>
             holder.thumbNail.contentDescription = book.getTitle()
         }
 
+        if(book.getAuthor()!=null){
+            holder.textViewAuthor.text = book.getAuthor()
+        }
+
         book.getCover()?.let {
             val arrayInputStream = ByteArrayInputStream(it)
             val bitmap = BitmapFactory.decodeStream(arrayInputStream)
             holder.thumbNail.setImageBitmap(bitmap)
         } ?: run {
             Timber.e("Image was not found.")
-            holder.thumbNail.setImageResource(R.drawable.allatra_ru)
+            holder.thumbNail.setImageResource(R.drawable.allatra)
 //            book.coverLink?.let {
 //                val baseUrl = server + "/" + book.fileName + it
 //                Picasso.with(activity).load(baseUrl).into(viewHolder.imageView)
