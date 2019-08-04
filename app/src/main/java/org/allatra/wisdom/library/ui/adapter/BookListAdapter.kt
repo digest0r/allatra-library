@@ -13,7 +13,7 @@ import org.allatra.wisdom.library.db.BookInfo
 import timber.log.Timber
 import java.io.ByteArrayInputStream
 
-class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>() {
 
     private var listOfBooks = mutableListOf<BookInfo>()
 
@@ -24,10 +24,10 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textViewTitle: TextView = itemView.findViewById<View>(R.id.title) as TextView
-        val imageView: ImageView = itemView.findViewById(R.id.thumbnail) as ImageView
+        val thumbNail: ImageView = itemView.findViewById(R.id.thumbnail) as ImageView
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookListViewHolder {
         return BookListViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.book_item2,
@@ -40,25 +40,23 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     /**
      * Method responsible for loading data when user scroll.
      */
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        val bookViewHolder = viewHolder as BookListViewHolder
-
+    override fun onBindViewHolder(holder: BookListViewHolder, position: Int) {
         val book = listOfBooks[position]
         // Bind items
-        viewHolder.textViewTitle.text = book.getTitle()
-        viewHolder.textViewTitle.contentDescription = "\u00A0"
+        holder.textViewTitle.text = book.getTitle()
+        holder.textViewTitle.contentDescription = "\u00A0"
 
         if (book.getTitle()!=null) {
-            viewHolder.imageView.contentDescription = book.getTitle()
+            holder.thumbNail.contentDescription = book.getTitle()
         }
 
         book.getCover()?.let {
             val arrayInputStream = ByteArrayInputStream(it)
             val bitmap = BitmapFactory.decodeStream(arrayInputStream)
-            viewHolder.imageView.setImageBitmap(bitmap)
+            holder.thumbNail.setImageBitmap(bitmap)
         } ?: run {
             Timber.e("Image was not found.")
-            viewHolder.imageView.setImageResource(R.drawable.allatra_ru)
+            holder.thumbNail.setImageResource(R.drawable.allatra_ru)
 //            book.coverLink?.let {
 //                val baseUrl = server + "/" + book.fileName + it
 //                Picasso.with(activity).load(baseUrl).into(viewHolder.imageView)
@@ -66,10 +64,10 @@ class BookListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
 
         // This attaches listener to see where user clicked
-        bookViewHolder.itemView.setOnClickListener(object : View.OnClickListener {
+        holder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 Log.d(TAG, "Position clicked: $position, Book to open: ${listOfBooks[position].getTitle()}")
-                val context = bookViewHolder.itemView.context
+                val context = holder.itemView.context
 
 
 //                val reader = BufferedReader(
