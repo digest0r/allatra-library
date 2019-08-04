@@ -23,6 +23,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.core.os.ConfigurationCompat
+import org.readium.r2.shared.Injectable
 import org.readium.r2.streamer.parser.EpubParser
 import org.readium.r2.streamer.server.Server
 import timber.log.Timber
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var preferences: SharedPreferences
 
     protected lateinit var server: Server
-    private var localPort: Int = 0
+    private var localPort: Int = 1
 
     companion object {
         private const val TAG = "MainActivity"
@@ -128,33 +129,54 @@ class MainActivity : AppCompatActivity() {
 
     private fun readBooksFromAssetsByLanguage(enLanguage: EnumDefinition.EnLanguage){
         assets.list(ASSETS_BOOKS_ROOT+"/${enLanguage.abbreviation}")?.filter { it.endsWith(".epub") }?.let { list ->
+            val listOfRegisteredBookInfo = databaseHandler!!.getListOfBookInfo()
             list.forEach { book ->
-                Log.d(TAG, "Book processing: $book")
-
+                Timber.d( "Book processing: $book")
                 val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$book")
-                val fileUUID = UUID.randomUUID()
+                // Get UUID based on the book
+                val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
                 val publicationPath = workingDir + fileUUID
+                // Check if book exists
+                val bookInfo = listOfRegisteredBookInfo.filter {
+                    it.getIdentifier()!!.compareTo(fileUUID.toString()) == 0
+                }.toList().firstOrNull()
 
-                inputStream.writeToFile(publicationPath)
-                val file = File(publicationPath)
+                if(bookInfo == null) {
+                    inputStream.writeToFile(publicationPath)
+                    val file = File(publicationPath)
+                    val epubParser = EpubParser()
+                    val pubBox = epubParser.parse(publicationPath)
 
-                val epubParser = EpubParser()
-                val pubBox = epubParser.parse(publicationPath)
-
-                if(pubBox!=null){
-                    //Add publication port to preferences
-                    val publicationIdentifier = pubBox.publication.metadata.identifier
-                    preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString()).apply()
-
-                    databaseHandler!!.createBookInfoObject(pubBox)
+                    if (pubBox != null) {
+                        //Add publication port to preferences
+                        val publicationIdentifier = pubBox.publication.metadata.identifier
+                        preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
+                            .apply()
+                        // Creates a db object of books
+                        databaseHandler!!.createBookInfoObject(
+                            pubBox,
+                            fileUUID.toString(),
+                            publicationPath,
+                            EnumDefinition.EnLanguage.EN
+                        )
+                        // Add pub to the server
+                        server.addEpub(
+                            pubBox.publication,
+                            pubBox.container,
+                            "/$fileUUID",
+                            applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
+                        )
+                    } else {
+                        Timber.e("Book: pupBox is null.")
+                    }
                 } else {
-                    Log.d(TAG, "Book: pupBox is null.")
+                    Timber.d( "Book: $book already registered.")
                 }
             }
         }
+
+        databaseHandler?.let { it.commitRecords() }
     }
-
-
 
     private fun InputStream.writeToFile(path: String) {
         use { input ->
@@ -276,7 +298,7 @@ class MainActivity : AppCompatActivity() {
             // Actual lang
             val actualLang = systemLangList[0]
 
-            listOfBooks = it.getListOfBookInfo(Locale.getDefault().displayLanguage)
+            listOfBooks = it.getListOfBookInfoANdInit(Locale.getDefault().displayLanguage)
         } ?: run {
             Log.e("Error", "DatabaseHandler was not initialized.")
         }

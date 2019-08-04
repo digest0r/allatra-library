@@ -9,9 +9,9 @@ import org.allatra.wisdom.library.db.BookInfo
 class BookListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bindView(book: BookInfo) {
         itemView.textBookName.text = book.getTitle()
-        itemView.textBookDescription.text = book.getDescription()
-        itemView.textReadPages.text = "Read: "+book.getIndexPage().toString() + "/" + book.getTotalPages()
+        //itemView.textBookDescription.text = book.getDescription()
+        //itemView.textReadPages.text = "Read: "+book.getIndexPage().toString() + "/" + book.getTotalPages()
 
-        Glide.with(itemView.context).load(book.getThumbNail()).into(itemView.thumbNail)
+        //Glide.with(itemView.context).load(book.getThumbNail()).into(itemView.thumbNail)
     }
 }

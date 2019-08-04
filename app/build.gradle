@@ -44,6 +44,7 @@ dependencies {
     implementation 'org.nanohttpd:nanohttpd-nanolets:2.3.2-SNAPSHOT'
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation 'joda-time:joda-time:2.9.9'
+    implementation 'org.zeroturnaround:zt-zip:1.12'
 
     if (findProject(':r2-streamer')) {
         implementation project(':r2-streamer')
