@@ -1,4 +1,4 @@
-package org.allatra.wisdom.library
+package org.allatra.wisdom.library.ui.activity
 
 import android.content.Context
 import android.os.Bundle
@@ -22,7 +22,11 @@ import java.util.*
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.util.TypedValue
 import androidx.core.os.ConfigurationCompat
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.RecyclerView
+import org.allatra.wisdom.library.R
 import org.readium.r2.shared.Injectable
 import org.readium.r2.streamer.parser.EpubParser
 import org.readium.r2.streamer.server.Server
@@ -31,6 +35,8 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.ServerSocket
+import androidx.recyclerview.widget.GridLayoutManager
+import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 
 
 class MainActivity : AppCompatActivity() {
@@ -128,7 +134,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun readBooksFromAssetsByLanguage(enLanguage: EnumDefinition.EnLanguage){
-        assets.list(ASSETS_BOOKS_ROOT+"/${enLanguage.abbreviation}")?.filter { it.endsWith(".epub") }?.let { list ->
+        assets.list(ASSETS_BOOKS_ROOT +"/${enLanguage.abbreviation}")?.filter { it.endsWith(".epub") }?.let { list ->
             val listOfRegisteredBookInfo = databaseHandler!!.getListOfBookInfo()
             list.forEach { book ->
                 Timber.d( "Book processing: $book")
@@ -137,8 +143,8 @@ class MainActivity : AppCompatActivity() {
                 val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
                 val publicationPath = workingDir + fileUUID
                 // Check if book exists
-                val bookInfo = listOfRegisteredBookInfo.filter {
-                    it.getIdentifier()!!.compareTo(fileUUID.toString()) == 0
+                var bookInfo = listOfRegisteredBookInfo.filter {
+                    it.getFileName()!!.compareTo(fileUUID.toString()) == 0
                 }.toList().firstOrNull()
 
                 if(bookInfo == null) {
@@ -269,17 +275,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView(){
-        recyclerViewBooks.layoutManager = LinearLayoutManager(this)
-        recyclerViewBooks.addItemDecoration(VerticalSpaceItemDecoration(48))
-
-        //This will for default android divider
-        recyclerViewBooks.addItemDecoration(DividerItemDecoration(this))
-
         // Init adapter
         adapter = BookListAdapter()
-        recyclerViewBooks.adapter = adapter
         localLanguage = EnumDefinition.EnLanguage.EN
         adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
+
+        val recyclerView = findViewById(R.id.recyclerViewBooks) as RecyclerView
+        val mLayoutManager = GridLayoutManager(this, 2)
+
+        recyclerView.layoutManager = mLayoutManager
+        recyclerView.addItemDecoration(GridSpacingItemDecoration(2, 10, true, this))
+        recyclerView.itemAnimator = DefaultItemAnimator() as RecyclerView.ItemAnimator?
+        recyclerView.adapter = adapter
+        //adapter.notifyDataSetChanged()
     }
 
     private fun initData() {
