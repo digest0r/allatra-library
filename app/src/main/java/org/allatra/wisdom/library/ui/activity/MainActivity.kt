@@ -7,13 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import org.allatra.wisdom.library.ui.adapter.BookListAdapter
 import org.allatra.wisdom.library.db.DatabaseHandler
-import org.allatra.wisdom.library.ui.decoration.DividerItemDecoration
-import org.allatra.wisdom.library.ui.decoration.VerticalSpaceItemDecoration
 import org.allatra.wisdom.library.static.EnumDefinition
 import android.content.res.Configuration
 import org.allatra.wisdom.library.db.BookInfo
@@ -22,8 +18,6 @@ import java.util.*
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
-import android.provider.Settings
-import android.util.TypedValue
 import android.widget.ImageView
 import androidx.core.os.ConfigurationCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -41,7 +35,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
-
 
 class MainActivity : AppCompatActivity() {
     private var databaseHandler: DatabaseHandler? = null

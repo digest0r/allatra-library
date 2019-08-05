@@ -11,4 +11,5 @@
     <string name="text_language_pl">Polish</string>
     <string name="text_language_lt">Latvian</string>
     <string name="text_language_it">Italian</string>
+    <string name="button_read_txt">Read</string>
 </resources>
