@@ -2,7 +2,7 @@ package org.allatra.wisdom.library.static
 
 object EnumDefinition {
     enum class EnLanguage(val abbreviation: String){
-        EN("en"), RU("ru"), UA("ua"), CZ("cz"), BG("bg"), DE("de"), PL("pl"), LT("lt"), IT("it")
+        EN("en"), RU("ru"), UA("ua"), CS("cs"), BG("bg"), DE("de"), PL("pl"), LT("lt"), IT("it")
     }
 
     enum class EnLanguageDesc(val description: String){

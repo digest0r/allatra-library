@@ -20,6 +20,7 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.widget.ImageView
 import androidx.core.os.ConfigurationCompat
+import androidx.core.os.LocaleListCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import org.allatra.wisdom.library.R
@@ -34,6 +35,7 @@ import java.net.ServerSocket
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import org.allatra.wisdom.library.BuildConfig
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 
 class MainActivity : AppCompatActivity() {
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         private const val WRONG_PDF_ID = 111111
         private const val ASSETS_BOOKS_ROOT = "books"
         private const val SHARED_PREFERENCES_NAME = "org.allatra.wisdow"
+        private const val EPUB_POSTFIX = ".epub"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +69,10 @@ class MainActivity : AppCompatActivity() {
 //        supportActionBar!!.setDisplayShowCustomEnabled(true)
 //        supportActionBar!!.setLogo(R.mipmap.lotus_flower)
 //        supportActionBar!!.setDisplayUseLogoEnabled(true)
+
+        if(BuildConfig.DEBUG){
+            Timber.plant(Timber.DebugTree())
+        }
 
         databaseHandler = DatabaseHandler(this)
         initServer()
@@ -78,7 +85,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         super.onActivityResult(requestCode, resultCode, intent)
-        Log.d(TAG, "Activity result.")
+        Timber.tag(TAG).e("Activity result.")
         if (resultCode == RESULT_OK && intent != null) {
             val pdfId = intent.getLongExtra("pdfId", WRONG_PDF_ID.toLong())
 
@@ -86,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 adapter.setList(getFilteredBooks(localLanguage!!))
             }
         } else {
-            Log.e(TAG, "ResultCode=$resultCode, requestCode=$requestCode, $intent")
+            Timber.tag(TAG).e("ResultCode=$resultCode, requestCode=$requestCode, $intent")
         }
     }
 
@@ -130,55 +137,66 @@ class MainActivity : AppCompatActivity() {
         stopServer()
     }
 
-    private fun readBooksFromAssetsByLanguage(enLanguage: EnumDefinition.EnLanguage){
-        assets.list(ASSETS_BOOKS_ROOT +"/${enLanguage.abbreviation}")?.filter { it.endsWith(".epub") }?.let { list ->
-            val listOfRegisteredBookInfo = databaseHandler!!.getListOfBookInfo()
-            list.forEach { book ->
-                Timber.d( "Book processing: $book")
-                val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$book")
-                // Get UUID based on the book
-                val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
-                val publicationPath = workingDir + fileUUID
-                // Check if book exists
-                var bookInfo = listOfRegisteredBookInfo.filter {
-                    it.getFileName()!!.compareTo(fileUUID.toString()) == 0
-                }.toList().firstOrNull()
+    private fun readBooksFromAssets(){
+        var isNewPublication = false
+        EnumDefinition.EnLanguage.values().forEach { enLanguage ->
+            Timber.tag(TAG).d( "Checking books under: $enLanguage.")
 
-                if(bookInfo == null) {
-                    inputStream.writeToFile(publicationPath)
-                    val file = File(publicationPath)
-                    val epubParser = EpubParser()
-                    val pubBox = epubParser.parse(publicationPath)
+            assets.list("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}")?.filter { it.endsWith(EPUB_POSTFIX) }?.let { list ->
+                val listOfRegisteredBookInfo = databaseHandler!!.getListOfBookInfo()
+                list.forEach { book ->
+                    Timber.tag(TAG).d( "Book processing: $book")
+                    val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$book")
+                    // Get UUID based on the book
+                    val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
+                    val publicationPath = workingDir + fileUUID
+                    // Check if book exists
+                    var bookInfo = listOfRegisteredBookInfo.filter {
+                        it.getFileName()!!.compareTo(fileUUID.toString()) == 0
+                    }.toList().firstOrNull()
 
-                    if (pubBox != null) {
-                        //Add publication port to preferences
-                        val publicationIdentifier = pubBox.publication.metadata.identifier
-                        preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
-                            .apply()
-                        // Creates a db object of books
-                        databaseHandler!!.createBookInfoObject(
-                            pubBox,
-                            fileUUID.toString(),
-                            publicationPath,
-                            EnumDefinition.EnLanguage.EN
-                        )
-                        // Add pub to the server
-                        server.addEpub(
-                            pubBox.publication,
-                            pubBox.container,
-                            "/$fileUUID",
-                            applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
-                        )
+                    if(bookInfo == null) {
+                        isNewPublication = true
+                        inputStream.writeToFile(publicationPath)
+                        val file = File(publicationPath)
+                        val epubParser = EpubParser()
+                        val pubBox = epubParser.parse(publicationPath)
+
+                        if (pubBox != null) {
+                            //Add publication port to preferences
+                            val publicationIdentifier = pubBox.publication.metadata.identifier
+                            preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
+                                .apply()
+                            // Creates a db object of books
+                            databaseHandler!!.createBookInfoObject(
+                                pubBox,
+                                fileUUID.toString(),
+                                publicationPath,
+                                enLanguage
+                            )
+                            // Add pub to the server
+                            server.addEpub(
+                                pubBox.publication,
+                                pubBox.container,
+                                "/$fileUUID",
+                                applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
+                            )
+                        } else {
+                            Timber.tag(TAG).e("Book: pupBox is null.")
+                        }
                     } else {
-                        Timber.e("Book: pupBox is null.")
+                        Timber.tag(TAG).d( "Book: $book already registered.")
                     }
-                } else {
-                    Timber.d( "Book: $book already registered.")
                 }
             }
         }
 
-        databaseHandler?.let { it.commitRecords() }
+        if (isNewPublication){
+            databaseHandler?.let { it.commitRecords() }
+            Timber.tag(TAG).i( "New publications were added.")
+        } else {
+            Timber.tag(TAG).i( "No new publications added.")
+        }
     }
 
     private fun InputStream.writeToFile(path: String) {
@@ -274,10 +292,7 @@ class MainActivity : AppCompatActivity() {
     private fun initView(){
         // Init collapsing toolbar
         initCollapsingToolbar()
-        // Init adapter
-        adapter = BookListAdapter()
-        localLanguage = EnumDefinition.EnLanguage.EN
-        adapter.setList(getFilteredBooks(EnumDefinition.EnLanguage.EN))
+        // back drop lotus image
         val backDrop = findViewById<ImageView>(R.id.backdrop)
         backDrop.setImageResource(R.drawable.big_lotus)
 
@@ -290,26 +305,31 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
+    /**
+     * Takes care of initializing backend information.
+     */
     private fun initData() {
         // Init share preferences
         preferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         // Init working dir
         workingDir = this.filesDir.path + "/"
-        Log.d(TAG, "Working dir set to: $workingDir")
+        Timber.tag(TAG).d("Working dir set to: $workingDir")
+        // Read all books from assets folder
+        readBooksFromAssets()
+        // System language
+        val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
+        // Init user settings
+        initUserLanguage(systemLangList)
+        // Get all the books
+        listOfBooks = databaseHandler?.getListOfBookInfo()!!
+        // Init adapter
+        adapter = BookListAdapter()
+        // Do the filter
+        adapter.setList(getFilteredBooks(localLanguage!!))
+    }
 
-        readBooksFromAssetsByLanguage(EnumDefinition.EnLanguage.EN)
-        databaseHandler?.let {
-            // Language of app
-            val lang = Locale.getDefault().displayLanguage
-            // System language
-            val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
-            // Actual lang
-            val actualLang = systemLangList[0]
-
-            listOfBooks = it.getListOfBookInfoANdInit(Locale.getDefault().displayLanguage)
-        } ?: run {
-            Log.e("Error", "DatabaseHandler was not initialized.")
-        }
+    private fun initUserLanguage(localeListCompat: LocaleListCompat){
+        localLanguage = databaseHandler!!.initUserSettingsAndReturn(localeListCompat)
     }
 
     private fun initServer(){

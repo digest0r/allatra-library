@@ -1,10 +1,12 @@
 package org.allatra.wisdom.library.db
 
 import android.content.Context
+import androidx.core.os.LocaleListCompat
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import org.allatra.wisdom.library.static.EnumDefinition
 import org.allatra.wisdom.library.static.StaticDefinition
+import org.allatra.wisdom.library.ui.activity.MainActivity
 import org.readium.r2.shared.Publication
 import org.readium.r2.streamer.parser.PubBox
 import org.zeroturnaround.zip.ZipUtil
@@ -17,6 +19,7 @@ class DatabaseHandler() {
 
     companion object {
         private const val TAG = "DB"
+        private const val DEFAULT_USER_ID = 1L
     }
 
     constructor(context: Context) : this() {
@@ -36,27 +39,6 @@ class DatabaseHandler() {
         realm = Realm.getInstance(config)
     }
 
-    fun getListOfBookInfoANdInit(language: String): MutableList<BookInfo>{
-        Timber.i( "Language is $language")
-        //deleteAllRecords()
-        // Init user settings
-        initUserSettings(language)
-        // Try to fetch existing records
-        var listOfBooks = realm.where(BookInfo::class.java).findAll()
-
-        if(listOfBooks.size==0){
-            Timber.i("Db was initialized with new records.")
-            realm.beginTransaction()
-            realm.commitTransaction()
-
-            listOfBooks = realm.where(BookInfo::class.java).findAll()
-        } else {
-            Timber.i( "Db has records. Size: ${listOfBooks.size}")
-        }
-
-        return listOfBooks
-    }
-
     fun getListOfBookInfo(): MutableList<BookInfo>{
         return realm.where(BookInfo::class.java).findAll()
     }
@@ -71,10 +53,40 @@ class DatabaseHandler() {
         realm.commitTransaction()
     }
 
-   private fun initUserSettings(language: String){
-        var userSettings = UserSettings()
-        userSettings.setId(0)
-        userSettings.setLanguage(language)
+   fun initUserSettingsAndReturn(localeListCompat: LocaleListCompat): EnumDefinition.EnLanguage{
+       val user = realm.where(UserSettings::class.java).equalTo("id", DEFAULT_USER_ID).findFirst()
+       var userSettings = UserSettings()
+       var enLanguage : EnumDefinition.EnLanguage
+       if(user == null){
+           Timber.tag(TAG).i("User has no preferred settings yet. Creating new one.")
+           userSettings = UserSettings()
+           userSettings.setId(DEFAULT_USER_ID)
+
+           // Actual user language
+           val actualLang = localeListCompat[0]
+           if(localeListCompat.size()>1){
+               Timber.tag(TAG).w("User has more languages installed. $localeListCompat")
+           }
+
+           Timber.tag(TAG).i("User has main language set to: ${actualLang.language}, ${actualLang.displayLanguage}")
+           // Parse the language
+           try{
+                enLanguage = EnumDefinition.EnLanguage.valueOf(actualLang.language.toUpperCase())
+           } catch (e: java.lang.IllegalArgumentException){
+               Timber.tag(TAG).e("Language of user cannot be parsed: ${actualLang.language}, ${actualLang.displayLanguage}.")
+               enLanguage = EnumDefinition.EnLanguage.EN
+               userSettings.setLanguage(enLanguage.abbreviation)
+           }
+
+           realm.beginTransaction()
+           realm.copyToRealmOrUpdate(userSettings)
+           realm.commitTransaction()
+       } else {
+           Timber.tag(TAG).d("User settings exist.")
+           enLanguage = EnumDefinition.EnLanguage.valueOf(user.getLanguage()!!.toUpperCase())
+       }
+
+       return enLanguage
     }
 
     fun getBookInfoById(id: Long): BookInfo?{
@@ -129,7 +141,13 @@ class DatabaseHandler() {
         Timber.i("Languages: $languages")
         if(languages.isNotEmpty()) {
             val pubLanguage = languages[0]
-            //TODO: implement list of the possible languages and compare
+            var enLanguage: EnumDefinition.EnLanguage
+            try{
+                enLanguage = EnumDefinition.EnLanguage.valueOf(pubLanguage.toUpperCase())
+                languageAbbreviation = enLanguage.abbreviation
+            } catch (e: java.lang.IllegalArgumentException){
+                Timber.tag(TAG).e("Language of publication cannot be parsed: $pubLanguage.")
+            }
         }
 
         return languageAbbreviation
