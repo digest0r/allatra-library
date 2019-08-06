@@ -238,11 +238,10 @@ class MainActivity : AppCompatActivity() {
 
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
-                    localLanguage = EnumDefinition.EnLanguage.CZ
-                    Log.d(TAG, "Language is changed to: $item, CZ")
+                    localLanguage = EnumDefinition.EnLanguage.CS
+                    Log.d(TAG, "Language is changed to: $item, CS")
                     adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
-                    attachBaseContext(this)
                 }
             }
             alertLanguages!!.dismiss()
@@ -359,17 +358,11 @@ class MainActivity : AppCompatActivity() {
          appBarLayout.addOnOffsetChangedListener(
              object: AppBarLayout.OnOffsetChangedListener{
                  override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-                     var isShow = false
-                     var scrollRange = -1
+                     val scrollRange = appBarLayout!!.totalScrollRange
 
-                     if (scrollRange == -1) {
-                         scrollRange = appBarLayout!!.totalScrollRange
-                     }
-
-                     if (scrollRange + verticalOffset == 0) {
+                     if(verticalOffset + scrollRange < 30 ) {
                          collapsingToolbar.title = getString(R.string.app_name)
-                         isShow = true
-                     } else if (isShow) {
+                     } else {
                          collapsingToolbar.title = " "
                      }
                  }
