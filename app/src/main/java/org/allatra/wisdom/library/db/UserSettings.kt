@@ -7,7 +7,7 @@ import org.allatra.wisdom.library.static.EnumDefinition.EnLayout
 
 open class UserSettings: RealmObject() {
     @PrimaryKey
-    private var id: Long = 0
+    private var id: Long = 1
 
     private var language: String? = EnLanguage.EN.abbreviation
 
