@@ -35,7 +35,9 @@ import java.net.ServerSocket
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import kotlinx.android.synthetic.main.content_main.*
 import org.allatra.wisdom.library.BuildConfig
+import org.allatra.wisdom.library.lang.ContextWrapper
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 
 class MainActivity : AppCompatActivity() {
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         databaseHandler = DatabaseHandler(this)
-        initServer()
+//        initServer()
         initData()
         initView()
     }
@@ -129,7 +131,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        startServer()
+//        startServer()
     }
 
     override fun onDestroy() {
@@ -209,6 +211,8 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this@MainActivity)
 
         builder.setTitle("Select your language: ")
+        var mContext: Context
+        var res: Resources
 
         builder.setSingleChoiceItems(getLanguagesLocal(), -1) { dialog, item ->
             when (item) {
@@ -217,7 +221,11 @@ class MainActivity : AppCompatActivity() {
                     localLanguage = EnumDefinition.EnLanguage.EN
                     Log.d(TAG, "Language is changed to: $item, EN")
                     adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+                    var pom = localeManager.setLocale(this, localLang)
+                    mContext = ContextWrapper.wrap(this, "en")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 1 -> {
@@ -225,7 +233,11 @@ class MainActivity : AppCompatActivity() {
                     localLanguage = EnumDefinition.EnLanguage.RU
                     Log.d(TAG, "Language is changed to: $item, RU")
                     adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+                    var pom = localeManager.setLocale(this, localLang)
+                    mContext = ContextWrapper.wrap(this, "ru")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 2 ->{
@@ -233,7 +245,11 @@ class MainActivity : AppCompatActivity() {
                     localLanguage = EnumDefinition.EnLanguage.UA
                     Log.d(TAG, "Language is changed to: $item, UA")
                     adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+                    var pom = localeManager.setLocale(this, localLang)
+                    mContext = ContextWrapper.wrap(this, "ua")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 3 ->{
@@ -241,7 +257,11 @@ class MainActivity : AppCompatActivity() {
                     localLanguage = EnumDefinition.EnLanguage.CS
                     Log.d(TAG, "Language is changed to: $item, CS")
                     adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+                    var pom = localeManager.setLocale(this, localLang)
+                    mContext = ContextWrapper.wrap(this, localLanguage.toString())
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
             }
             alertLanguages!!.dismiss()
@@ -314,7 +334,7 @@ class MainActivity : AppCompatActivity() {
         workingDir = this.filesDir.path + "/"
         Timber.tag(TAG).d("Working dir set to: $workingDir")
         // Read all books from assets folder
-        readBooksFromAssets()
+//        readBooksFromAssets()
         // System language
         val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
         // Init user settings
