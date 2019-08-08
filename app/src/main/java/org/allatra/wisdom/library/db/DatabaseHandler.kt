@@ -40,7 +40,28 @@ class DatabaseHandler() {
     }
 
     fun getListOfBookInfo(): MutableList<BookInfo>{
-        return realm.where(BookInfo::class.java).findAll()
+        val allDBobjects = realm.where(BookInfoDAO::class.java).findAll()
+        val listInfo = mutableListOf<BookInfo>()
+
+        allDBobjects.forEach { bookDao ->
+            listInfo.add(mapToKotlinDataObject(bookDao))
+        }
+
+        return listInfo
+    }
+
+    private fun mapToKotlinDataObject(bookInfoDAO: BookInfoDAO): BookInfo{
+        return BookInfo(bookInfoDAO.getId(),
+            bookInfoDAO.getFileName(),
+            bookInfoDAO.getTitle(),
+            bookInfoDAO.getAuthor(),
+            bookInfoDAO.getFileAbsolutePath(),
+            bookInfoDAO.getCoverLink(),
+            bookInfoDAO.getIdentifier(),
+            bookInfoDAO.getCover(),
+            bookInfoDAO.getExtension(),
+            bookInfoDAO.getCreationDate(),
+            bookInfoDAO.getLanguage())
     }
 
     private fun dropRealm(realmConfiguration: RealmConfiguration){
@@ -89,15 +110,15 @@ class DatabaseHandler() {
        return enLanguage
     }
 
-    fun getBookInfoById(id: Long): BookInfo?{
-        return realm.where(BookInfo::class.java).equalTo("id", id).findFirst()
+    fun getBookInfoById(id: Long): BookInfoDAO?{
+        return realm.where(BookInfoDAO::class.java).equalTo("id", id).findFirst()
     }
 
-    fun getBookInfoByPublicationIdentifier(identifier: String): BookInfo?{
-        return realm.where(BookInfo::class.java).equalTo("identifier", identifier).findFirst()
+    fun getBookInfoByPublicationIdentifier(identifier: String): BookInfoDAO?{
+        return realm.where(BookInfoDAO::class.java).equalTo("identifier", identifier).findFirst()
     }
 
-    fun updateBookInfo(bookInfo: BookInfo, indexPage: Int){
+    fun updateBookInfo(bookInfo: BookInfoDAO, indexPage: Int){
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(bookInfo)
         realm.commitTransaction()
@@ -113,7 +134,7 @@ class DatabaseHandler() {
         if (publication.type == Publication.TYPE.EPUB) {
             val publicationIdentifier = publication.metadata.identifier
 
-            val bookInfo = BookInfo()
+            val bookInfo = BookInfoDAO()
             bookInfo.setId(getNextLongId())
             bookInfo.setTitle(publication.metadata.title)
             bookInfo.setAuthor(getAuthorName(publication))
@@ -154,7 +175,7 @@ class DatabaseHandler() {
     }
 
     private fun getNextLongId(): Long{
-        val currentIdNum = realm.where(BookInfo::class.java).max("id")
+        val currentIdNum = realm.where(BookInfoDAO::class.java).max("id")
         val nextId: Long
         if (currentIdNum == null) {
             nextId = 1

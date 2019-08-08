@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                     val publicationPath = workingDir + fileUUID
                     // Check if book exists
                     var bookInfo = listOfRegisteredBookInfo.filter {
-                        it.getFileName()!!.compareTo(fileUUID.toString()) == 0
+                        it.fileName!!.compareTo(fileUUID.toString()) == 0
                     }.toList().firstOrNull()
 
                     if(bookInfo == null) {
@@ -275,9 +275,10 @@ class MainActivity : AppCompatActivity() {
             }
             if (server.isAlive) {
                 // Add Resources from R2Navigator
-                server.loadReadiumCSSResources(assets)
-                server.loadR2ScriptResources(assets)
-                server.loadR2FontResources(assets, applicationContext)
+                //TODO> this does not work and throws an exception, find a way how to resolve it
+//                server.loadReadiumCSSResources(assets)
+//                server.loadR2ScriptResources(assets)
+//                server.loadR2FontResources(assets, applicationContext)
             }
         }
     }
@@ -341,7 +342,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getFilteredBooks(language: EnumDefinition.EnLanguage): MutableList<BookInfo> {
-        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.getId() }.toMutableList()
+        return listOfBooks.filter { bookInfo -> bookInfo.getLanguageEnum().equals(language) }.sortedBy { bookInfo -> bookInfo.id }.toMutableList()
     }
 
      /**
