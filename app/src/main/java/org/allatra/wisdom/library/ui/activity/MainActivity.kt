@@ -150,23 +150,21 @@ class MainActivity : AppCompatActivity() {
                     // Get UUID based on the book
                     val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
                     val publicationPath = workingDir + fileUUID
+
                     // Check if book exists
                     var bookInfo = listOfRegisteredBookInfo.filter {
                         it.fileName!!.compareTo(fileUUID.toString()) == 0
                     }.toList().firstOrNull()
 
+                    // Write file out
+                    inputStream.writeToFile(publicationPath)
+                    val file = File(publicationPath)
+                    val epubParser = EpubParser()
+                    val pubBox = epubParser.parse(publicationPath)
+
                     if(bookInfo == null) {
                         isNewPublication = true
-                        inputStream.writeToFile(publicationPath)
-                        val file = File(publicationPath)
-                        val epubParser = EpubParser()
-                        val pubBox = epubParser.parse(publicationPath)
-
                         if (pubBox != null) {
-                            //Add publication port to preferences
-                            val publicationIdentifier = pubBox.publication.metadata.identifier
-                            preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
-                                .apply()
                             // Creates a db object of books
                             databaseHandler!!.createBookInfoObject(
                                 pubBox,
@@ -174,18 +172,28 @@ class MainActivity : AppCompatActivity() {
                                 publicationPath,
                                 enLanguage
                             )
-                            // Add pub to the server
-                            server.addEpub(
-                                pubBox.publication,
-                                pubBox.container,
-                                "/$fileUUID",
-                                applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
-                            )
                         } else {
                             Timber.tag(TAG).e("Book: pupBox is null.")
                         }
                     } else {
                         Timber.tag(TAG).d( "Book: $book already registered.")
+                    }
+
+                    pubBox?.let {
+                        val publicationIdentifier = pubBox.publication.metadata.identifier
+                        // Preferences and publication port
+                        preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
+                            .apply()
+
+                        // Add pub to the server
+                        server.addEpub(
+                            pubBox.publication,
+                            pubBox.container,
+                            "/$fileUUID",
+                            applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json")
+                        Timber.tag(TAG).d( "Book: $book added to the server.")
+                    }?: run {
+                        Timber.tag(TAG).e("Book: pupBox is null.")
                     }
                 }
             }
@@ -215,7 +223,7 @@ class MainActivity : AppCompatActivity() {
                 0 -> {
                     localLang = getString(R.string.text_language_en)
                     localLanguage = EnumDefinition.EnLanguage.EN
-                    Log.d(TAG, "Language is changed to: $item, EN")
+                    Timber.tag(TAG).d( "Language is changed to: $item, EN")
                     adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
@@ -223,7 +231,7 @@ class MainActivity : AppCompatActivity() {
                 1 -> {
                     localLang = getString(R.string.text_language_ru)
                     localLanguage = EnumDefinition.EnLanguage.RU
-                    Log.d(TAG, "Language is changed to: $item, RU")
+                    Timber.tag(TAG).d( "Language is changed to: $item, RU")
                     adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
@@ -231,7 +239,7 @@ class MainActivity : AppCompatActivity() {
                 2 ->{
                     localLang = getString(R.string.text_language_ua)
                     localLanguage = EnumDefinition.EnLanguage.UA
-                    Log.d(TAG, "Language is changed to: $item, UA")
+                    Timber.tag(TAG).d( "Language is changed to: $item, UA")
                     adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
@@ -239,7 +247,7 @@ class MainActivity : AppCompatActivity() {
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
                     localLanguage = EnumDefinition.EnLanguage.CS
-                    Log.d(TAG, "Language is changed to: $item, CS")
+                    Timber.tag(TAG).d( "Language is changed to: $item, CS")
                     adapter.setList(getFilteredBooks(localLanguage!!))
                     localeManager.setLocale(this, localLang)
                 }
@@ -275,6 +283,8 @@ class MainActivity : AppCompatActivity() {
             }
             if (server.isAlive) {
                 // Add Resources from R2Navigator
+
+
                 //TODO> this does not work and throws an exception, find a way how to resolve it
 //                server.loadReadiumCSSResources(assets)
 //                server.loadR2ScriptResources(assets)
@@ -326,6 +336,7 @@ class MainActivity : AppCompatActivity() {
         adapter = BookListAdapter()
         // Do the filter
         adapter.setList(getFilteredBooks(localLanguage!!))
+        // Start the server
     }
 
     private fun initUserLanguage(localeListCompat: LocaleListCompat){

@@ -1,7 +1,6 @@
 package org.allatra.wisdom.library.ui.adapter
 
 import android.graphics.BitmapFactory
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +15,6 @@ import timber.log.Timber
 import java.io.ByteArrayInputStream
 import android.widget.LinearLayout
 import android.view.WindowManager
-import android.graphics.Color.parseColor
 import android.view.Gravity
 import android.widget.ProgressBar
 import android.content.Context
@@ -30,7 +28,7 @@ import nl.komponents.kovenant.then
 import org.allatra.wisdom.library.ui.activity.MainActivity
 import org.allatra.wisdom.library.ui.activity.R2ReaderActivity
 import org.readium.r2.streamer.parser.EpubParser
-
+import org.jetbrains.anko.*
 
 class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>() {
 
@@ -99,10 +97,8 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>
                 val bookToOpen = listOfBooks[position]
                 Timber.tag(TAG).d( "Book to open: $book1")
                 bookToOpen.fileAbsolutePath?.let {
-                    val parser = EpubParser()
-                    val pub = parser.parse(bookToOpen.fileAbsolutePath!!)
+                    //startActivity(intentFor<R2ReaderActivity>("publicationPath" to bookToOpen.fileAbsolutePath, "cbzName" to book.fileName, "publication" to pub!!.publication))
                     val context = holder.itemView.context
-
                     val intent = Intent(context, R2ReaderActivity::class.java)
                     intent.putExtra("publicationPath", bookToOpen.fileAbsolutePath)
                     intent.putExtra("epubName", bookToOpen.fileName)
