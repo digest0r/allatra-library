@@ -13,6 +13,8 @@ open class BookInfoDAO: RealmObject() {
 
     private var fileName: String? = null
 
+    private var fileUUID: String? = null
+
     private var title: String? = null
 
     private var author: String? = null
@@ -32,6 +34,7 @@ open class BookInfoDAO: RealmObject() {
     private var language: String = EnLanguage.EN.abbreviation
 
     fun getId(): Long? = id
+    fun getFileUUID(): String? = fileUUID
     fun getTitle(): String? = title
     fun getIdentifier(): String? = identifier
     fun getCover(): ByteArray? = cover
@@ -49,6 +52,10 @@ open class BookInfoDAO: RealmObject() {
 
     fun setId(id: Long){
         this.id = id
+    }
+
+    fun setFileUUID(fileUUID: String){
+        this.fileUUID = fileUUID
     }
 
     fun setFileName(fileName: String){

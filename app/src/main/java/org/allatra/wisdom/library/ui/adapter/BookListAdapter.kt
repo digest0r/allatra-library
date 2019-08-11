@@ -30,7 +30,7 @@ import org.allatra.wisdom.library.ui.activity.R2ReaderActivity
 import org.readium.r2.streamer.parser.EpubParser
 import org.jetbrains.anko.*
 
-class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>() {
+class BookListAdapter(private var bookListener: OnBookClickListener) : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>() {
 
     private var listOfBooks = mutableListOf<BookInfo>()
     private var book1: Int = 0
@@ -88,16 +88,14 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>
 //            }
         }
 
-        //TODO: Basis for creating a new intent and passing further
         holder.readBtn.setOnClickListener(View.OnClickListener { view ->
             val dialog = getProgressDialog(view.context)
 
             task {
-                Timber.tag(TAG).d( "Instead of task.")
                 val bookToOpen = listOfBooks[position]
+                bookListener.bookListClicked(bookToOpen)
                 Timber.tag(TAG).d( "Book to open: $book1")
                 bookToOpen.fileAbsolutePath?.let {
-                    //startActivity(intentFor<R2ReaderActivity>("publicationPath" to bookToOpen.fileAbsolutePath, "cbzName" to book.fileName, "publication" to pub!!.publication))
                     val context = holder.itemView.context
                     val intent = Intent(context, R2ReaderActivity::class.java)
                     intent.putExtra("publicationPath", bookToOpen.fileAbsolutePath)
@@ -125,6 +123,11 @@ class BookListAdapter : RecyclerView.Adapter<BookListAdapter.BookListViewHolder>
                 }
             }
         })
+    }
+
+    interface OnBookClickListener {
+        //this is method to handle the event when clicked on the image in Recyclerview
+        fun bookListClicked(bookInfo: BookInfo)
     }
 
     fun setList(listOfBooks: MutableList<BookInfo>) {

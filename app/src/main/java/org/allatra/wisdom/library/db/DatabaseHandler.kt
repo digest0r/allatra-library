@@ -53,6 +53,7 @@ class DatabaseHandler() {
     private fun mapToKotlinDataObject(bookInfoDAO: BookInfoDAO): BookInfo{
         return BookInfo(bookInfoDAO.getId(),
             bookInfoDAO.getFileName(),
+            bookInfoDAO.getFileUUID(),
             bookInfoDAO.getTitle(),
             bookInfoDAO.getAuthor(),
             bookInfoDAO.getFileAbsolutePath(),
@@ -124,7 +125,7 @@ class DatabaseHandler() {
         realm.commitTransaction()
     }
 
-    fun createBookInfoObject(pubBox: PubBox, fileUUID: String, absolutePath: String, enLanguage: EnumDefinition.EnLanguage){
+    fun createBookInfoObject(pubBox: PubBox, fileName: String, fileUUID: String, absolutePath: String, enLanguage: EnumDefinition.EnLanguage){
         if(!realm.isInTransaction){
             Timber.i("Begin transaction.")
             realm.beginTransaction()
@@ -139,7 +140,8 @@ class DatabaseHandler() {
             bookInfo.setTitle(publication.metadata.title)
             bookInfo.setAuthor(getAuthorName(publication))
             bookInfo.setIdentifier(publicationIdentifier)
-            bookInfo.setFileName(fileUUID)
+            bookInfo.setFileName(fileName)
+            bookInfo.setFileUUID(fileUUID)
             bookInfo.setFileAbsolutePath(absolutePath)
             publication.coverLink?.href?.let {
                 bookInfo.setCoverLink(it)

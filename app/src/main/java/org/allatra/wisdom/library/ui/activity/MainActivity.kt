@@ -1,5 +1,6 @@
 package org.allatra.wisdom.library.ui.activity
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -35,10 +36,21 @@ import java.net.ServerSocket
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.allatra.wisdom.library.BuildConfig
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
+import org.readium.r2.streamer.parser.PubBox
+import kotlin.coroutines.CoroutineContext
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, CoroutineScope {
+    /**
+     * Context of this scope.
+     */
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
+
+
     private var databaseHandler: DatabaseHandler? = null
     private val localeManager = LocaleManager()
     var alertLanguages: AlertDialog? = null
@@ -50,15 +62,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var workingDir: String
     private lateinit var preferences: SharedPreferences
 
-    protected lateinit var server: Server
-    private var localPort: Int = 1
+    private lateinit var server: Server
+    private var localPort: Int = 0
+    private var useExternalFileDir = false
 
     companion object {
         private const val TAG = "MainActivity"
         private const val WRONG_PDF_ID = 111111
         private const val ASSETS_BOOKS_ROOT = "books"
-        private const val SHARED_PREFERENCES_NAME = "org.allatra.wisdow"
+        private const val SHARED_PREFERENCES_NAME = "org.allatra.wisdom"
         private const val EPUB_POSTFIX = ".epub"
+        private const val SERVER_SOCKET_PORT = 0
+        private const val USE_EXTERNAL_DIR = "useExternalFileDir"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -130,6 +145,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         startServer()
+        //readBooksFromAssets(true)
     }
 
     override fun onDestroy() {
@@ -144,30 +160,26 @@ class MainActivity : AppCompatActivity() {
 
             assets.list("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}")?.filter { it.endsWith(EPUB_POSTFIX) }?.let { list ->
                 val listOfRegisteredBookInfo = databaseHandler!!.getListOfBookInfo()
-                list.forEach { book ->
-                    Timber.tag(TAG).d( "Book processing: $book")
-                    val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$book")
+                list.forEach { bookFileName ->
+                    Timber.tag(TAG).d( "Processing publication: $bookFileName")
                     // Get UUID based on the book
-                    val fileUUID = UUID.nameUUIDFromBytes(book.toByteArray())
-                    val publicationPath = workingDir + fileUUID
+                    val fileUUID = UUID.nameUUIDFromBytes(bookFileName.toByteArray())
 
                     // Check if book exists
                     var bookInfo = listOfRegisteredBookInfo.filter {
-                        it.fileName!!.compareTo(fileUUID.toString()) == 0
+                        it.fileUUID!!.compareTo(fileUUID.toString()) == 0
                     }.toList().firstOrNull()
 
-                    // Write file out
-                    inputStream.writeToFile(publicationPath)
-                    val file = File(publicationPath)
-                    val epubParser = EpubParser()
-                    val pubBox = epubParser.parse(publicationPath)
-
-                    if(bookInfo == null) {
+                    if (bookInfo == null) {
                         isNewPublication = true
+                        val pubBox = getPubBox(bookFileName, enLanguage)
+                        val publicationPath = workingDir + fileUUID
+
                         if (pubBox != null) {
                             // Creates a db object of books
                             databaseHandler!!.createBookInfoObject(
                                 pubBox,
+                                bookFileName,
                                 fileUUID.toString(),
                                 publicationPath,
                                 enLanguage
@@ -176,24 +188,7 @@ class MainActivity : AppCompatActivity() {
                             Timber.tag(TAG).e("Book: pupBox is null.")
                         }
                     } else {
-                        Timber.tag(TAG).d( "Book: $book already registered.")
-                    }
-
-                    pubBox?.let {
-                        val publicationIdentifier = pubBox.publication.metadata.identifier
-                        // Preferences and publication port
-                        preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
-                            .apply()
-
-                        // Add pub to the server
-                        server.addEpub(
-                            pubBox.publication,
-                            pubBox.container,
-                            "/$fileUUID",
-                            applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json")
-                        Timber.tag(TAG).d( "Book: $book added to the server.")
-                    }?: run {
-                        Timber.tag(TAG).e("Book: pupBox is null.")
+                        Timber.tag(TAG).d("Book: $bookFileName already exists in database.")
                     }
                 }
             }
@@ -204,6 +199,47 @@ class MainActivity : AppCompatActivity() {
             Timber.tag(TAG).i( "New publications were added.")
         } else {
             Timber.tag(TAG).i( "No new publications added.")
+        }
+    }
+
+
+    override fun bookListClicked(bookInfo: BookInfo) {
+        addPublicationToServer(bookInfo.fileUUID!!, bookInfo.fileName!!, bookInfo.getLanguageEnum())
+    }
+
+    private fun getPubBox(bookFileName: String, enLanguage: EnumDefinition.EnLanguage): PubBox?{
+        // Get UUID based on the book
+        val fileUUID = UUID.nameUUIDFromBytes(bookFileName.toByteArray())
+        val publicationPath = workingDir + fileUUID
+        // Get inputStream
+        val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$bookFileName")
+        // Write file out
+        inputStream.writeToFile(publicationPath)
+        // Creates the file
+        File(publicationPath)
+        val epubParser = EpubParser()
+        return epubParser.parse(publicationPath)
+    }
+
+    private fun addPublicationToServer(fileUUID: String, bookFileName: String, enLanguage: EnumDefinition.EnLanguage){
+        val pubBox = getPubBox(bookFileName, enLanguage)
+
+        pubBox?.let {
+            val publicationIdentifier = pubBox.publication.metadata.identifier
+            // Preferences and publication port
+            preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
+                .apply()
+
+            // Add pub to the server
+            server.addEpub(
+                pubBox.publication,
+                pubBox.container,
+                "/$fileUUID",
+                applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
+            )
+            Timber.tag(TAG).d("Book: $bookFileName added to the server.")
+        } ?: run {
+            Timber.tag(TAG).e("Book: pupBox is null.")
         }
     }
 
@@ -277,11 +313,13 @@ class MainActivity : AppCompatActivity() {
         if (!server.isAlive) {
             try {
                 server.start()
+                Timber.tag(TAG).d("READIUM Server has been started.")
             } catch (e: IOException) {
                 // do nothing
                 Timber.e(e)
             }
             if (server.isAlive) {
+                Timber.tag(TAG).d("READIUM Server is alive.")
                 // Add Resources from R2Navigator
 
 
@@ -322,9 +360,8 @@ class MainActivity : AppCompatActivity() {
         // Init share preferences
         preferences = getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
         // Init working dir
-        workingDir = this.filesDir.path + "/"
-        Timber.tag(TAG).d("Working dir set to: $workingDir")
-        // Read all books from assets folder
+        initWorkingPath()
+        // Read all books from assets folder, do not add to the server yet
         readBooksFromAssets()
         // System language
         val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
@@ -333,10 +370,19 @@ class MainActivity : AppCompatActivity() {
         // Get all the books
         listOfBooks = databaseHandler?.getListOfBookInfo()!!
         // Init adapter
-        adapter = BookListAdapter()
+        adapter = BookListAdapter(this)
         // Do the filter
         adapter.setList(getFilteredBooks(localLanguage!!))
         // Start the server
+    }
+
+    private fun initWorkingPath(){
+        if(useExternalFileDir){
+            workingDir = this.getExternalFilesDir(null)?.path + "/"
+        } else {
+            workingDir = this.filesDir.path + "/"
+        }
+        Timber.tag(TAG).d("Working dir set to: $workingDir")
     }
 
     private fun initUserLanguage(localeListCompat: LocaleListCompat){
@@ -344,7 +390,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initServer(){
-        val s = ServerSocket(0)
+        val s = ServerSocket(SERVER_SOCKET_PORT)
         s.localPort
         s.close()
 

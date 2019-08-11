@@ -5,6 +5,7 @@ import org.allatra.wisdom.library.static.EnumDefinition
 data class BookInfo(
     val id: Long?,
     val fileName: String?,
+    val fileUUID: String?,
     var title: String?,
     var author: String?,
     var fileAbsolutePath: String?,
