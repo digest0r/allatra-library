@@ -66,18 +66,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var localeManager = LocaleManager()
-        var lang = localeManager.loadSharedResources(this)
+        var lang = localeManager.loadSharedResources(this, true)
         setContentView(R.layout.activity_main)
         textView.text = lang
+        setTitle(resources.getString(R.string.app_name));
 //        localeManager.setLanguage() default
-
-        
-
 //        setSupportActionBar(toolbar)
 //        supportActionBar!!.setDisplayShowCustomEnabled(true)
 //        supportActionBar!!.setLogo(R.mipmap.lotus_flower)
 //        supportActionBar!!.setDisplayUseLogoEnabled(true)
-
         val toolbar = toolbar
         setSupportActionBar(toolbar)
 
@@ -221,15 +218,10 @@ class MainActivity : AppCompatActivity() {
                     localLanguage = EnumDefinition.EnLanguage.EN
                     Log.d(TAG, "Language is changed to: $item, EN")
 //                    adapter.setList(getFilteredBooks(localLanguage!!))
-//                    var pom = localeManager.setLocale(this, localLang)
-//                    mContext = ContextWrapper.wrap(this, "en")
-//                    res = mContext.resources
-//                    textView.text = res.getString(R.string.app_name)
-//                    LocaleManager.setNewLocale(this, LocaleManager.LANGUAGE_KEY_ENGLISH);
-//                    recreate()
-                    mContext = localeManager.setLanguage(this, "en")
+                    mContext = localeManager.changeLanguage(this, "en")
                     res = mContext.resources
                     textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 1 -> {
@@ -237,18 +229,10 @@ class MainActivity : AppCompatActivity() {
 //                    localLanguage = EnumDefinition.EnLanguage.RU
                     Log.d(TAG, "Language is changed to: $item, RU")
 //                    adapter.setList(getFilteredBooks(localLanguage!!))
-//                    var pom = localeManager.setLocale(this, localLang)
-//                    mContext = ContextWrapper.wrap(this, "ru")
-//                    res = mContext.resources
-//                    textView.text = res.getString(R.string.app_name)
-//                    mContext = LocaleManager.setNewLocale(this, LocaleManager.LANGUAGE_KEY_Czech);
-//                    res = mContext.resources
-                    mContext = localeManager.setLanguage(this, "ru")
+                    mContext = localeManager.changeLanguage(this, "ru")
                     res = mContext.resources
                     textView.text = res.getString(R.string.app_name)
-
-//                    textView.text = res.getString(R.string.app_name)
-
+                    recreate()
                 }
 
                 2 ->{
@@ -256,33 +240,20 @@ class MainActivity : AppCompatActivity() {
 //                    localLanguage = EnumDefinition.EnLanguage.UA
                     Log.d(TAG, "Language is changed to: $item, UA")
 //                    adapter.setList(getFilteredBooks(localLanguage!!))
-//                    var pom = localeManager.setLocale(this, localLang)
-//                    mContext = ContextWrapper.wrap(this, "ua")
-//                    res = mContext.resources
-                    mContext = localeManager.setLanguage(this, "uk")
+                    mContext = localeManager.changeLanguage(this, "uk")
                     res = mContext.resources
                     textView.text = res.getString(R.string.app_name)
-//                    recreate();
-
-
+                    recreate();
                 }
-
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
                     localLanguage = EnumDefinition.EnLanguage.CS
                     Log.d(TAG, "Language is changed to: $item, CS")
 //                    adapter.setList(getFilteredBooks(localLanguage!!))
-//                    var pom = localeManager.setLocale(this, localLang)
-//                    mContext = ContextWrapper.wrap(this, localLanguage.toString())
-//                    res = mContext.resources
-//                    textView.text = res.getString(R.string.app_name)
-//                    LocaleManager.setNewLocale(this, LocaleManager.LANGUAGE_KEY_Czech);
-//                    recreate();
-//                    textView.text = res.getString(R.string.app_name)
-                    mContext = localeManager.setLanguage(this, "cz")
+                    mContext = localeManager.changeLanguage(this, "cs")
                     res = mContext.resources
                     textView.text = res.getString(R.string.app_name)
-
+                    recreate()
                 }
             }
             alertLanguages!!.dismiss()
