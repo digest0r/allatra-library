@@ -172,8 +172,8 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
 
                     if (bookInfo == null) {
                         isNewPublication = true
-                        val pubBox = getPubBox(bookFileName, enLanguage)
                         val publicationPath = workingDir + fileUUID
+                        val pubBox = getPubBox(bookFileName, publicationPath, enLanguage)
 
                         if (pubBox != null) {
                             // Creates a db object of books
@@ -204,25 +204,28 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
 
 
     override fun bookListClicked(bookInfo: BookInfo) {
-        addPublicationToServer(bookInfo.fileUUID!!, bookInfo.fileName!!, bookInfo.getLanguageEnum())
+        addPublicationToServer(bookInfo.fileUUID!!, bookInfo.fileAbsolutePath!!, bookInfo.fileName!!, bookInfo.getLanguageEnum())
     }
 
-    private fun getPubBox(bookFileName: String, enLanguage: EnumDefinition.EnLanguage): PubBox?{
-        // Get UUID based on the book
-        val fileUUID = UUID.nameUUIDFromBytes(bookFileName.toByteArray())
-        val publicationPath = workingDir + fileUUID
-        // Get inputStream
-        val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$bookFileName")
-        // Write file out
-        inputStream.writeToFile(publicationPath)
-        // Creates the file
-        File(publicationPath)
+    private fun getPubBox(bookFileName: String, publicationPath: String, enLanguage: EnumDefinition.EnLanguage): PubBox?{
+        val workingFile = File(publicationPath)
+
+        if(!workingFile.exists()){
+            Timber.tag(TAG).d("Book: $bookFileName will be written into: $publicationPath.")
+            // Get inputStream
+            val inputStream = assets.open("$ASSETS_BOOKS_ROOT/${enLanguage.abbreviation}/$bookFileName")
+            // Write file out
+            inputStream.writeToFile(publicationPath)
+            // Creates the file
+            File(publicationPath)
+        }
+
         val epubParser = EpubParser()
         return epubParser.parse(publicationPath)
     }
 
-    private fun addPublicationToServer(fileUUID: String, bookFileName: String, enLanguage: EnumDefinition.EnLanguage){
-        val pubBox = getPubBox(bookFileName, enLanguage)
+    private fun addPublicationToServer(fileUUID: String, publicationPath: String, bookFileName: String, enLanguage: EnumDefinition.EnLanguage){
+        val pubBox = getPubBox(bookFileName, publicationPath, enLanguage)
 
         pubBox?.let {
             val publicationIdentifier = pubBox.publication.metadata.identifier
@@ -230,14 +233,18 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
             preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
                 .apply()
 
-            // Add pub to the server
-            server.addEpub(
-                pubBox.publication,
-                pubBox.container,
-                "/$fileUUID",
-                applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
-            )
-            Timber.tag(TAG).d("Book: $bookFileName added to the server.")
+            if(server.isAlive) {
+                // Add pub to the server
+                server.addEpub(
+                    pubBox.publication,
+                    pubBox.container,
+                    "/$fileUUID",
+                    applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
+                )
+                Timber.tag(TAG).d("Book: $bookFileName added to the server.")
+            } else {
+                Timber.tag(TAG).e("Server is not alive, cannot add a book.")
+            }
         } ?: run {
             Timber.tag(TAG).e("Book: pupBox is null.")
         }
@@ -324,9 +331,9 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
 
 
                 //TODO> this does not work and throws an exception, find a way how to resolve it
-//                server.loadReadiumCSSResources(assets)
-//                server.loadR2ScriptResources(assets)
-//                server.loadR2FontResources(assets, applicationContext)
+                server.loadReadiumCSSResources(assets)
+                server.loadR2ScriptResources(assets)
+                server.loadR2FontResources(assets, applicationContext)
             }
         }
     }
