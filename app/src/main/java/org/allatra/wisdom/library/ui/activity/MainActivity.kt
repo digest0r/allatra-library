@@ -12,14 +12,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.allatra.wisdom.library.ui.adapter.BookListAdapter
 import org.allatra.wisdom.library.db.DatabaseHandler
 import org.allatra.wisdom.library.static.EnumDefinition
-import android.content.res.Configuration
 import org.allatra.wisdom.library.db.BookInfo
-import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
-import android.os.Build
 import android.widget.ImageView
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
