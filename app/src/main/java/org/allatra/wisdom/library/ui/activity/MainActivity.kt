@@ -13,11 +13,11 @@ import org.allatra.wisdom.library.db.DatabaseHandler
 import org.allatra.wisdom.library.static.EnumDefinition
 import android.content.res.Configuration
 import org.allatra.wisdom.library.db.BookInfo
-import org.allatra.wisdom.library.lang.LocaleManager
 import java.util.*
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.os.Build
 import android.widget.ImageView
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
@@ -35,7 +35,9 @@ import java.net.ServerSocket
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import kotlinx.android.synthetic.main.content_main.*
 import org.allatra.wisdom.library.BuildConfig
+import org.allatra.wisdom.library.LocaleManager
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 
 class MainActivity : AppCompatActivity() {
@@ -63,21 +65,27 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var localeManager = LocaleManager()
+        var lang = localeManager.loadSharedResources(this, true)
         setContentView(R.layout.activity_main)
-
-        setSupportActionBar(toolbar)
+        textView.text = lang
+        setTitle(resources.getString(R.string.app_name));
+//        localeManager.setLanguage() default
+//        setSupportActionBar(toolbar)
 //        supportActionBar!!.setDisplayShowCustomEnabled(true)
 //        supportActionBar!!.setLogo(R.mipmap.lotus_flower)
 //        supportActionBar!!.setDisplayUseLogoEnabled(true)
+        val toolbar = toolbar
+        setSupportActionBar(toolbar)
 
         if(BuildConfig.DEBUG){
             Timber.plant(Timber.DebugTree())
         }
 
         databaseHandler = DatabaseHandler(this)
-        initServer()
-        initData()
-        initView()
+//        initServer()
+//        initData()
+//        initView()
     }
 
     /**
@@ -95,15 +103,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             Timber.tag(TAG).e("ResultCode=$resultCode, requestCode=$requestCode, $intent")
         }
-    }
-
-    override fun attachBaseContext(context: Context) {
-        super.attachBaseContext(localeManager.setLocale(context, localLang))
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        localeManager.setLocale(this, localLang)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -129,12 +128,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        startServer()
+//        startServer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopServer()
+//        stopServer()
     }
 
     private fun readBooksFromAssets(){
@@ -209,6 +208,8 @@ class MainActivity : AppCompatActivity() {
         val builder = AlertDialog.Builder(this@MainActivity)
 
         builder.setTitle("Select your language: ")
+        var mContext: Context
+        var res: Resources
 
         builder.setSingleChoiceItems(getLanguagesLocal(), -1) { dialog, item ->
             when (item) {
@@ -216,32 +217,43 @@ class MainActivity : AppCompatActivity() {
                     localLang = getString(R.string.text_language_en)
                     localLanguage = EnumDefinition.EnLanguage.EN
                     Log.d(TAG, "Language is changed to: $item, EN")
-                    adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+//                    adapter.setList(getFilteredBooks(localLanguage!!))
+                    mContext = localeManager.changeLanguage(this, "en")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 1 -> {
-                    localLang = getString(R.string.text_language_ru)
-                    localLanguage = EnumDefinition.EnLanguage.RU
+//                    localLang = getString(R.string.text_language_ru)
+//                    localLanguage = EnumDefinition.EnLanguage.RU
                     Log.d(TAG, "Language is changed to: $item, RU")
-                    adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+//                    adapter.setList(getFilteredBooks(localLanguage!!))
+                    mContext = localeManager.changeLanguage(this, "ru")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
 
                 2 ->{
-                    localLang = getString(R.string.text_language_ua)
-                    localLanguage = EnumDefinition.EnLanguage.UA
+//                    localLang = getString(R.string.text_language_ua)
+//                    localLanguage = EnumDefinition.EnLanguage.UA
                     Log.d(TAG, "Language is changed to: $item, UA")
-                    adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+//                    adapter.setList(getFilteredBooks(localLanguage!!))
+                    mContext = localeManager.changeLanguage(this, "uk")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate();
                 }
-
                 3 ->{
                     localLang = getString(R.string.text_language_cz)
                     localLanguage = EnumDefinition.EnLanguage.CS
                     Log.d(TAG, "Language is changed to: $item, CS")
-                    adapter.setList(getFilteredBooks(localLanguage!!))
-                    localeManager.setLocale(this, localLang)
+//                    adapter.setList(getFilteredBooks(localLanguage!!))
+                    mContext = localeManager.changeLanguage(this, "cs")
+                    res = mContext.resources
+                    textView.text = res.getString(R.string.app_name)
+                    recreate()
                 }
             }
             alertLanguages!!.dismiss()
@@ -290,7 +302,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView(){
         // Init collapsing toolbar
-        initCollapsingToolbar()
+//        initCollapsingToolbar()
         // back drop lotus image
         val backDrop = findViewById<ImageView>(R.id.backdrop)
         backDrop.setImageResource(R.drawable.big_lotus)
@@ -314,11 +326,11 @@ class MainActivity : AppCompatActivity() {
         workingDir = this.filesDir.path + "/"
         Timber.tag(TAG).d("Working dir set to: $workingDir")
         // Read all books from assets folder
-        readBooksFromAssets()
+//        readBooksFromAssets()
         // System language
         val systemLangList = ConfigurationCompat.getLocales(Resources.getSystem().configuration)
         // Init user settings
-        initUserLanguage(systemLangList)
+//        initUserLanguage(systemLangList)
         // Get all the books
         listOfBooks = databaseHandler?.getListOfBookInfo()!!
         // Init adapter

@@ -10,10 +10,17 @@
         tools:showIn="@layout/activity_main"
         tools:context=".ui.activity.MainActivity">
 
+    <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:id="@+id/textView"
+            android:layout_above="@+id/recyclerViewBooks"
+            android:layout_marginBottom="-34dp"/>
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewBooks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" android:layout_marginTop="66dp" android:layout_alignParentTop="true"/>
 </RelativeLayout>
