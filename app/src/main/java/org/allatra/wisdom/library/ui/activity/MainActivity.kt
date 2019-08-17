@@ -38,6 +38,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.allatra.wisdom.library.BuildConfig
 import org.allatra.wisdom.library.ui.decoration.GridSpacingItemDecoration
 import org.readium.r2.streamer.parser.PubBox
@@ -225,28 +226,31 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
     }
 
     private fun addPublicationToServer(fileUUID: String, publicationPath: String, bookFileName: String, enLanguage: EnumDefinition.EnLanguage){
-        val pubBox = getPubBox(bookFileName, publicationPath, enLanguage)
 
-        pubBox?.let {
-            val publicationIdentifier = pubBox.publication.metadata.identifier
-            // Preferences and publication port
-            preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
-                .apply()
+        launch {
+            val pubBox = getPubBox(bookFileName, publicationPath, enLanguage)
 
-            if(server.isAlive) {
-                // Add pub to the server
-                server.addEpub(
-                    pubBox.publication,
-                    pubBox.container,
-                    "/$fileUUID",
-                    applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
-                )
-                Timber.tag(TAG).d("Book: $bookFileName added to the server.")
-            } else {
-                Timber.tag(TAG).e("Server is not alive, cannot add a book.")
+            pubBox?.let {
+                val publicationIdentifier = pubBox.publication.metadata.identifier
+                // Preferences and publication port
+                preferences.edit().putString("$publicationIdentifier-publicationPort", localPort.toString())
+                    .apply()
+
+                if(server.isAlive) {
+                    // Add pub to the server
+                    server.addEpub(
+                        pubBox.publication,
+                        pubBox.container,
+                        "/$fileUUID",
+                        applicationContext.filesDir.path + "/" + Injectable.Style.rawValue + "/UserProperties.json"
+                    )
+                    Timber.tag(TAG).d("Book: $bookFileName added to the server.")
+                } else {
+                    Timber.tag(TAG).e("Server is not alive, cannot add a book.")
+                }
+            } ?: run {
+                Timber.tag(TAG).e("Book: pupBox is null.")
             }
-        } ?: run {
-            Timber.tag(TAG).e("Book: pupBox is null.")
         }
     }
 
@@ -328,9 +332,6 @@ class MainActivity : AppCompatActivity(), BookListAdapter.OnBookClickListener, C
             if (server.isAlive) {
                 Timber.tag(TAG).d("READIUM Server is alive.")
                 // Add Resources from R2Navigator
-
-
-                //TODO> this does not work and throws an exception, find a way how to resolve it
                 server.loadReadiumCSSResources(assets)
                 server.loadR2ScriptResources(assets)
                 server.loadR2FontResources(assets, applicationContext)
