@@ -12,7 +12,7 @@
     <string name="text_language_lt">Latvian</string>
     <string name="text_language_it">Italian</string>
     <string name="button_read_txt">Read</string>
+    <string name="progress_wait_while_preparing_book">Please wait while your book is being prepared.</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_r2_reader">R2ReaderActivity</string>
 </resources>
